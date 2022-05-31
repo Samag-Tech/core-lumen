@@ -1,0 +1,20 @@
+{
+    "name": "samagtech/core-lumen",
+    "description": "Classi per funzionalità automatizzate su Lumen",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Samagtech\\CoreLumen\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alessandro Marotta",
+            "email": "alessandro.marotta@samag.tech"
+        }
+    ],
+    "require": {
+        "laravel/lumen-framework": "^9.0"
+    }
+}
