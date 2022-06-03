@@ -5,11 +5,19 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Samagtech\\CoreLumen\\": "src/"
+            "SamagTech\\CoreLumen\\": "src/"
         },
         "files" : [
             "src/debug_helper.php"
         ]
+    },
+    "scripts": {
+        "test" : "phpunit tests"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "authors": [
         {
@@ -18,6 +26,7 @@
         }
     ],
     "require": {
-        "laravel/lumen-framework": "^9.0"
+        "laravel/lumen-framework": "^9.0",
+        "phpunit/phpunit": "^9.5"
     }
 }
