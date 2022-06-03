@@ -42,12 +42,11 @@ jobs:
       - name: Generate Docs
         run: |
           docker run --rm -v $(pwd):/data phpdoc/phpdoc:3 run -d src/ -t ./docs
-      - name: Public Docs
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
           node-version: '13.x'
-      - name: Deploy to Server
+      - name: Publish Docs
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
             SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
