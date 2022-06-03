@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @abstract
  *
  * @author Alessandro Marotta <alessandro.marotta@samag.tech>
- * @since 2022-06-03
+ * @since v0.1
  */
 abstract class BaseModel extends Model {
 
