@@ -50,8 +50,8 @@ jobs:
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
             SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-            ARGS: '-rltgoDzvO --exclude=".[!.]*"'
-            SOURCE: "./docs"
+            ARGS: '-rltgoDzvO'
+            SOURCE: "./docs/*"
             REMOTE_HOST: ${{ secrets.HOST }}
             REMOTE_USER: ${{ secrets.USER }}
             TARGET: ${{ secrets.TARGET }}
