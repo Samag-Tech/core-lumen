@@ -2,6 +2,15 @@
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Classe astratta per la definizione di un modello
+ * pre-impostato
+ *
+ * @abstract
+ *
+ * @author Alessandro Marotta <alessandro.marotta@samag.tech>
+ * @since 2022-06-03
+ */
 abstract class BaseModel extends Model {
 
     //---------------------------------------------------------------------------------------------------
