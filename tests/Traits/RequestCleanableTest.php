@@ -17,7 +17,7 @@ class RequestCleanableTest extends TestCase {
     /**
      * @test
      */
-    public function is_only_used_fields_is_empty () {
+    public function only_used_fields_is_empty () {
 
         $this->expectException(CoreException::class);
 
@@ -39,4 +39,17 @@ class RequestCleanableTest extends TestCase {
         );
     }
 
+    /**
+     * @test
+     */
+    public function empty_clean_request_with_no_match_keys() {
+
+        Utils::usePrivateProperty($this->mock,'onlyUsedFields',  ['key', 'key1'] );
+
+        $this->assertEmpty(Utils::usePrivateMethod($this->mock, 'cleanRequest', new Request()));
+
+        Utils::usePrivateProperty($this->mock,'onlyUsedFields',  ['key', 'key1'] );
+
+        $this->assertEmpty(Utils::usePrivateMethod($this->mock, 'cleanRequest', new Request(['key3'])));
+    }
 }
