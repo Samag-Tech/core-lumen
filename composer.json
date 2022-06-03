@@ -6,7 +6,10 @@
     "autoload": {
         "psr-4": {
             "Samagtech\\CoreLumen\\": "src/"
-        }
+        },
+        "files" : [
+            "src/debug_helper.php"
+        ]
     },
     "authors": [
         {
