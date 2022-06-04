@@ -84,7 +84,7 @@ abstract class BaseValidationRequest implements ValidationRequest {
 
         // Se la validazione fallisce allora imposto gli attribuiti
         if ( $validator->fails() ) {
-            $this->errors = $validator->errors();
+            $this->errors = $validator->errors()->all();
             $this->valid  = false;
         }
     }
