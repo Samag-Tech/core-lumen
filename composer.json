@@ -8,7 +8,8 @@
             "SamagTech\\CoreLumen\\": "src/"
         },
         "files" : [
-            "src/debug_helper.php"
+            "src/debug_helper.php",
+            "src/response_helper.php"
         ]
     },
     "scripts": {
