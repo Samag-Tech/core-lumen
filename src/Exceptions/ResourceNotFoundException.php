@@ -17,13 +17,13 @@ class ResourceNotFoundException extends BaseException {
      * {@inheritdoc}
      *
      */
-    private string $messageCustom = 'Risorsa non trovata';
+    protected string $messageCustom = 'Risorsa non trovata';
 
     /**
      * {@inheritdoc}
      *
      */
-    private int $httpCode = 404;
+    protected int $httpCode = 404;
 
 }
 
