@@ -1,6 +1,7 @@
 <?php namespace SamagTech\CoreLumen\Contracts;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Definizione di un service.
@@ -28,13 +29,15 @@ interface Service {
     //---------------------------------------------------------------------------------------------------
 
     /**
-     * Restituisce i dati di una singola risorsa
+     * Restituisce i dati di una singola risorsa.
      *
+     * @access public
      * @param int|string $id    ID della risorsa
+     * @throws SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
      *
-     * @return array<string,mixed>
+     * @return JsonResource|array<string,mixed>
      */
-    public function show (int|string $id) : array;
+    public function show (int|string $id) : JsonResource|array;
 
     //---------------------------------------------------------------------------------------------------
 
@@ -45,7 +48,7 @@ interface Service {
      *
      * @return array<string,mixed>  Dati della risorsa appena creata
      */
-    public function store (Request $request) : array;
+    public function store (Request $request) : JsonResource|array;
 
     //---------------------------------------------------------------------------------------------------
 
