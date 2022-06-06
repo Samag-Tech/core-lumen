@@ -7,6 +7,30 @@ use SamagTech\CoreLumen\Core\BaseValidationRequest;
 /**
  * Trait per la gestione della validazioni.
  *
+ * Per utilizzare questo trait bisogna compilare l'array
+ * $validations aggiungendo le classi di validazione definite
+ * (tali classi devono estendere SamagTech\CoreLumen\Core\BaseValidationRequest)
+ * in questo modo:
+ *  - $validations = [
+ *      Validation1::class,
+ *      Validation2::class,
+ *      ecc
+ *  ];
+ *
+ * Impostato le classi si può usufruire del metodo validation()
+ * che accetta la richiesta ed eseguirà tutta la lista delle validazioni
+ * su essa.
+ * Se tutte le validazioni vanno a buon fine allora la funzione
+ * restituirà TRUE in caso contrario FALSE.
+ *
+ * Se la funzione restituisce FALSE allora è possibile recuperare
+ * la lista dei messaggi di errore tramite la funzione getValidationErrors().
+ *
+ * @property array $validations
+ * @property array $validationErrors
+ * @method array $getValidationErrors()
+ * @method bool validation(Request $request)
+ *
  * @author Alessandro Marotta <alessandro.marotta@samag.tech>
  * @since v0.1
  */
