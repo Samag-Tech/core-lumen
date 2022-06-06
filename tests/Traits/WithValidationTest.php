@@ -20,7 +20,7 @@ class WithValidationTest extends TestCase {
      * @test
      */
     public function validation_with_no_validation_rule () {
-        $this->assertTrue(Utils::usePrivateMethod($this->mock, 'validation', new Request()));
+        $this->assertTrue(Utils::usePrivateMethod($this->mock, 'runValidation', new Request()));
     }
 
     /**
@@ -69,7 +69,7 @@ class WithValidationTest extends TestCase {
 
         Utils::usePrivateProperty($this->mock, 'validations', $validations);
 
-        $this->assertTrue(Utils::usePrivateMethod($this->mock,'validation', $req));
+        $this->assertTrue(Utils::usePrivateMethod($this->mock,'runValidation', $req));
 
     }
 
@@ -98,7 +98,7 @@ class WithValidationTest extends TestCase {
 
         Utils::usePrivateProperty($this->mock, 'validations', [$rule]);
 
-        $this->assertFalse(Utils::usePrivateMethod($this->mock,'validation', $req));
+        $this->assertFalse(Utils::usePrivateMethod($this->mock,'runValidation', $req));
         $this->assertEquals(['The name field is required.'],$this->mock->getValidationErrors() );
     }
 
@@ -114,6 +114,6 @@ class WithValidationTest extends TestCase {
 
         $this->expectException(CoreException::class);
         Utils::usePrivateProperty($this->mock, 'validations', [$rule]);
-        Utils::usePrivateMethod($this->mock,'validation', $req);
+        Utils::usePrivateMethod($this->mock,'runValidation', $req);
     }
 }

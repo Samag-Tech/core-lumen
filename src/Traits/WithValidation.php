@@ -78,15 +78,32 @@ trait WithValidation {
     //---------------------------------------------------------------------------------------------------
 
     /**
+     * Setta la lista delle validazioni passate
+     *
+     * @access public
+     *
+     * @param ...$validations   Lista delle validazione da settare
+     *
+     * @return self
+     */
+    public function setValidations(...$validations) : self {
+        $this->validations = array_merge($validations);
+        return $this;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
      * Controlla se la richiesta è valida.
      *
      * @access protected
      *
      * @param Illuminate\Http\Request $request  Dati della richiesta
      * @throws CoreException    Se una validazione non è un istanza di BaseValidationRequest
+     *
      * @return bool
      */
-    protected function validation (Request $request) : bool {
+    protected function runValidation (Request $request) : bool {
 
         // Se non ci sono validazioni allora ritorna true
         if ( empty($this->validations) ) {
