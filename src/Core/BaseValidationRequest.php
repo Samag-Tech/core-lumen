@@ -5,9 +5,18 @@ use Illuminate\Support\Facades\Validator;
 use SamagTech\CoreLumen\Contracts\ValidationRequest;
 
 /**
- * Modello di base per la creazione di una validazione di una richiesta
+ * Modello di base per la creazione di una validazione di una richiesta.
+ *
+ * Viene implementata per definire una lista di validazioni da eseguire
+ * su una richiesta. Le validazioni vengono eseguite nel costruttore e
+ * in base all'esito vengono impostati le variabili $valid (se la validazione ha successo
+ * o meno) e $errors.
+ *
+ * Le validazioni sono eseguite solo se la funzione condition() restituisce un valore TRUE
+ * e per modificarne il comportamento bisogna sovrascriverla e, in base alla richiesta, eseguirla o meno.
  *
  * @abstract
+ *
  * @implements ValidationRequest
  *
  * @property Illuminate\Http\Request $request
