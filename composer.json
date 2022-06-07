@@ -9,7 +9,8 @@
         },
         "files" : [
             "src/debug_helper.php",
-            "src/response_helper.php"
+            "src/response_helper.php",
+            "src/log_helper.php"
         ]
     },
     "scripts": {
