@@ -37,6 +37,8 @@ abstract class BaseException extends Exception {
      */
     protected int $httpCode = 400;
 
+    //---------------------------------------------------------------------------------------------------
+
     /**
      * Costruttore.
      *
@@ -52,6 +54,8 @@ abstract class BaseException extends Exception {
         parent::__construct($message);
     }
 
+    //---------------------------------------------------------------------------------------------------
+
     /**
      * Restituisce il codice di stato
      *
@@ -62,4 +66,5 @@ abstract class BaseException extends Exception {
         return $this->httpCode;
     }
 
+    //---------------------------------------------------------------------------------------------------
 }

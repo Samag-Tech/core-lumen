@@ -12,6 +12,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @param JsonResource|array $response
  * @param int $statusCode
  *
+ * @link https://lumen.laravel.com/docs/9.x/responses#other-response-types
+ *
  * @return Response
  */
 if ( ! function_exists('respond')) {
@@ -36,6 +38,8 @@ if ( ! function_exists('respond')) {
  * @access public
  * @param string|array $messages
  * @param int $statusCode
+ *
+ * @link https://lumen.laravel.com/docs/9.x/responses#other-response-types
  *
  * @return Response
  */

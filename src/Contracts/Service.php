@@ -44,7 +44,12 @@ interface Service {
     /**
      * Crea una nuova risorsa.
      *
-     * @param Illuminate\Http\Request $request      Dati per la creazione della risorsa
+     * Esegue la logica di creazione di un una risorsa in base alla richiesta
+     * e, in caso di successo, restituisce l'oggetto creato.
+     *
+     * @param \Illuminate\Http\Request $request      Dati per la creazione della risorsa
+     *
+     * @throws SamagTech\CoreLumen\Exceptions\CreateException
      *
      * @return array<string,mixed>  Dati della risorsa appena creata
      */

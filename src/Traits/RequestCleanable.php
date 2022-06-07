@@ -47,7 +47,7 @@ trait RequestCleanable {
      * @access protected
      *
      * @param Illuminate\Http\Request $request
-     * @throws CoreException    Se non sono stati definiti campi da utilizzare
+     * @throws SamagTech\CoreLumen\Exceptions\CoreException    Se non sono stati definiti campi da utilizzare
      * @return array
      */
     protected function cleanRequest(Request $request) : array {

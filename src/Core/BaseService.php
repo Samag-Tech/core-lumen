@@ -2,9 +2,10 @@
 
 use Illuminate\Http\Request;
 use SamagTech\CoreLumen\Contracts\Service;
+use SamagTech\CoreLumen\Core\BaseRepository;
+use Illuminate\Validation\ValidationException;
 use SamagTech\CoreLumen\Traits\WithValidation;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Validation\ValidationException;
 use SamagTech\CoreLumen\Traits\RequestCleanable;
 use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
 
@@ -14,7 +15,10 @@ abstract class BaseService implements Service {
 
     protected string $jsonResource;
 
-    protected BaseModel $repository;
+    /**
+     * @var SamagTech\CoreLumen\Core\BaseRepository
+     */
+    protected BaseRepository $repository;
 
     protected array $genericRules = [];
     protected array $insertRules = [];
@@ -26,9 +30,9 @@ abstract class BaseService implements Service {
     /**
      * Costruttore.
      *
-     * @param BaseModel $repository     Modello per la gestione dei dati
+     * @param SamagTech\CoreLumen\Core\BaseRepository $repository     Modello per la gestione dei dati
      */
-    public function __construct(BaseModel $repository) {
+    public function __construct(BaseRepository $repository) {
         $this->repository = $repository;
     }
 
@@ -107,12 +111,12 @@ abstract class BaseService implements Service {
      *
      * @access protected
      *
-     * @param BaseModel     $resource   Risorsa appena recuperata
+     * @param \SamagTech\CoreLumen\Core\BaseRepository     $resource   Risorsa appena recuperata
      * @param int|string    $id         ID della risorsa recuperata
      *
-     * @return BaseModel
+     * @return SamagTech\CoreLumen\Core\BaseRepository
      */
-    protected function afterRetrieveById (BaseModel $resource, int|string $id) : BaseModel {
+    protected function afterRetrieveById (BaseRepository $resource, int|string $id) : BaseRepository {
         return $resource;
     }
 
@@ -144,12 +148,12 @@ abstract class BaseService implements Service {
      *
      * @access protected
      *
-     * @param BaseModel $resource   Risorsa appena creata
+     * @param \SamagTech\CoreLumen\Core\BaseRepository $resource   Risorsa appena creata
      * @param array $relations  Relazione recuperate dalla funzione getRelations()
      *
      * @return array    Le relazioni modificate
      */
-    protected function afterInsert(BaseModel $resource, array $relations) : array {
+    protected function afterInsert(BaseRepository $resource, array $relations) : array {
         return $relations;
     }
 

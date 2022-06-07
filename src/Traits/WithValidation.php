@@ -98,8 +98,9 @@ trait WithValidation {
      *
      * @access protected
      *
-     * @param Illuminate\Http\Request $request  Dati della richiesta
-     * @throws CoreException    Se una validazione non è un istanza di BaseValidationRequest
+     * @param \Illuminate\Http\Request $request  Dati della richiesta
+     *
+     * @throws SamagTech\CoreLumen\Exceptions\CoreException    Se una validazione non è un istanza di BaseValidationRequest
      *
      * @return bool
      */

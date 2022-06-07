@@ -3,7 +3,7 @@
 /**
  * Eccezione per la gestione delle risorse non trovate
  *
- * @extends BaseException
+ * @extends SamagTech\CoreLumen\Exceptions\BaseException
  *
  * @property string $messageCustom
  * @property int $httpCode
