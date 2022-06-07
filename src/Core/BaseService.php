@@ -12,6 +12,7 @@ use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
 abstract class BaseService implements Service {
     use WithValidation, RequestCleanable;
 
+    private string $tag;
 
     protected string $jsonResource;
 
@@ -23,7 +24,6 @@ abstract class BaseService implements Service {
     protected array $genericRules = [];
     protected array $insertRules = [];
     protected array $updateRules = [];
-    protected array $deleteRules = [];
 
     //---------------------------------------------------------------------------------------------------
 
@@ -34,6 +34,9 @@ abstract class BaseService implements Service {
      */
     public function __construct(BaseRepository $repository) {
         $this->repository = $repository;
+
+        // Imposto il tag per i log
+        $this->tag = get_class($this);
     }
 
     //---------------------------------------------------------------------------------------------------
@@ -45,8 +48,13 @@ abstract class BaseService implements Service {
 
         $resource = $this->repository->find($id);
 
+        info($this->tag. ': Recupero della risorsa', ['id' => $id]);
+
         // Se la risorsa non esiste allora sollevo un eccezione
         if ( is_null($resource) ) {
+
+            info($this->tag. ': La risorsa non esiste', ['id' => $id]);
+
             throw new ResourceNotFoundException();
         }
 
@@ -64,10 +72,15 @@ abstract class BaseService implements Service {
      */
     public function store (Request $request) : JsonResource|array {
 
+        info($this->tag. ': Richiesta creazione della risorsa', ['request' => $request]);
+
         // Imposto e lancio le validazioni
         $this->setValidations($this->genericRules, $this->insertRules);
 
         if ( ! $this->runValidation($request) ) {
+
+            info($this->tag. ': Errore di validazione', ['request' => $request, ['errors' => $this->getValidationErrors()]]);
+
             throw new ValidationException($this->getValidationErrors());
         }
 
@@ -83,6 +96,8 @@ abstract class BaseService implements Service {
         // Crea la risorsa
         $resource = $this->repository->create($data);
 
+        info($this->tag. ': Creazione della risorsa', ['resource' => $resource]);
+
         // Lancio la callback dopo aver creato le risorse
         $relations = $this->afterInsert($resource, $relations);
 
@@ -90,7 +105,10 @@ abstract class BaseService implements Service {
         if ( ! empty ($relations) ) {
 
             foreach ($relations as $relation => $values) {
+
                 $resource->{$relation}()->createMany($values);
+
+                info($this->tag. ': Creazione delle relazione', ['resource' => $resource, 'relation' => $relation]);
             }
         }
 
@@ -100,6 +118,39 @@ abstract class BaseService implements Service {
     //---------------------------------------------------------------------------------------------------
 
     //---------------------------------------------------------------------------------------------------
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete (int|string $id) : bool {
+
+        info($this->tag. ': Cancellazione risorsa', ['id' => $id]);
+
+        $resource = $this->repository->find($id);
+
+        // Se la risorsa non esiste allora sollevo un eccezione
+        if ( is_null($resource) ) {
+
+            info($this->tag. ': Risorsa non trovata per la cancellazione', ['id' => $id]);
+
+            throw new ResourceNotFoundException();
+        }
+
+        // Lancio una callback prima della cancellazione
+        $this->beforeDelete($resource, $id);
+
+        $deleted = $resource->delete();
+
+        // Lancio una callback dopo la cancellazione
+        $this->afterDelete($resource, $id);
+
+        if ( ! $deleted ) {
+            error($this->tag. ': Errore durante la cancellazione della risorsa', ['id' => $id]);
+        }
+
+        return $deleted;
+    }
+
 
     //---------------------------------------------------------------------------------------------------
 
@@ -156,6 +207,42 @@ abstract class BaseService implements Service {
     protected function afterInsert(BaseRepository $resource, array $relations) : array {
         return $relations;
     }
+
+    //---------------------------------------------------------------------------------------------------
+
+
+
+    /**
+     * Callback eseguita prima della cancellazione di una risorsa
+     *
+     * Deve essere sovrascritta per essere utilizzata e serve per eseguire
+     * ulteriori operazioni sulle relazioni prima che una risorsa venga cancellata.
+     *
+     * @access protected
+     *
+     * @param \SamagTech\CoreLumen\Core\BaseRepository $resource   Risorsa da cancellare
+     * @param int|string $id    ID della risorsa da cancellare
+     *
+     * @return void
+     */
+    protected function beforeDelete (BaseRepository $resource, int|string $id ) : void {}
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Callback eseguita dopo la cancellazione di una risorsa
+     *
+     * Deve essere sovrascritta per essere utilizzata e serve per eseguire
+     * ulteriori operazioni sulle relazioni dopo che la risorsa venga cancellata.
+     *
+     * @access protected
+     *
+     * @param \SamagTech\CoreLumen\Core\BaseRepository $resource   Risorsa cancellata
+     * @param int|string $id    ID della risorsa cancellata
+     *
+     * @return void
+     */
+    protected function afterDelete (BaseRepository $resource, int|string $id ) : void {}
 
     //---------------------------------------------------------------------------------------------------
 
