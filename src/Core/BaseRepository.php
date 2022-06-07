@@ -4,14 +4,16 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Classe astratta per la definizione di un modello
- * pre-impostato
+ * pre-impostato.
+ *
+ * @link https://laravel.com/docs/9.x/eloquent
  *
  * @abstract
  *
  * @author Alessandro Marotta <alessandro.marotta@samag.tech>
  * @since v0.1
  */
-abstract class BaseModel extends Model {
+abstract class BaseRepository extends Model {
 
     //---------------------------------------------------------------------------------------------------
     //      Valori di default del Modello
@@ -43,7 +45,7 @@ abstract class BaseModel extends Model {
     public $timestamps = false;
 
     /**
-     * Nome della colonna da u
+     * {@inheritdoc}
      */
     const CREATED_AT = 'created_date';
 
