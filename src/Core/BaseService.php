@@ -117,6 +117,68 @@ abstract class BaseService implements Service {
 
     //---------------------------------------------------------------------------------------------------
 
+    /**
+     * {@inheritdoc}
+     */
+    public function update (Request $request, int | string $id) : bool {
+
+        info($this->tag. ': Richiesta modifica di una risorsa', ['id' => $id, 'request' => $request]);
+
+        $resource = $this->repository->find($id);
+
+        // Se la risorsa non esiste allora sollevo un eccezione
+        if ( is_null($resource) ) {
+
+            info($this->tag. ': Risorsa non trovata per la cancellazione', ['id' => $id]);
+
+            throw new ResourceNotFoundException();
+        }
+
+        // Imposto e lancio le validazioni
+        $this->setValidations($this->genericRules, $this->updateRules);
+
+        if ( ! $this->runValidation($request) ) {
+
+            info($this->tag. ': Errore di validazione', ['request' => $request, ['errors' => $this->getValidationErrors()]]);
+
+            throw new ValidationException($this->getValidationErrors());
+        }
+
+        // Pulisco la richiesta
+        $data = $this->cleanRequest($request);
+
+        // Lancio la callback prima di modifica i dati
+        $data = $this->beforeUpdate($id, $resource, $data);
+
+        // Recupera eventuali relazioni
+        $relations = $this->getRelations($data);
+
+        // Modifica la risorsa
+        $updated = $this->repository->where($this->repository->getKeyName(), $id)->update($data);
+
+        info($this->tag. ': Modifica della risorsa', ['resource' => $resource, 'updated' => $updated > 0]);
+
+        // Lancio la callback dopo aver modificato la risorsa
+        $relations = $this->afterUpdate($id, $resource, $relations);
+
+        // Cancello le vecchie relationi e creo le nuove relazioni se sono presenti
+        if ( ! empty ($relations) ) {
+
+            foreach ($relations as $relation => $values) {
+
+                // Cancello le vecchie relazoni
+                $resource->{$relation}()->delete();
+
+                // Aggiungo le nuove
+                $resource->{$relation}()->createMany($values);
+
+                info($this->tag. ': Creazione delle relazione', ['resource' => $resource, 'relation' => $relation]);
+            }
+        }
+
+        return $updated;
+    }
+
     //---------------------------------------------------------------------------------------------------
 
     /**
@@ -205,6 +267,46 @@ abstract class BaseService implements Service {
      * @return array    Le relazioni modificate
      */
     protected function afterInsert(BaseRepository $resource, array $relations) : array {
+        return $relations;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Callback eseguita prima della modifica della risorsa
+     *
+     * Deve essere sovrascritta per essere utilizzata e serve per eseguire
+     * ulteriori operazioni sui dati prima di essere modificati
+     *
+     * @access protected
+     *
+     * @param int|string $id  ID risorsa da modificare
+     * @param \SamagTech\CoreLumen\Core\BaseRepository $resource  Dati della risorsa se è stata trovata
+     * @param array $data   Dati estratti dalla richiesta
+     *
+     * @return array    Restituisce i dati creare la risorsa
+     */
+    protected function beforeUpdate(int|string $id, BaseRepository $resource, array $data) : array {
+        return $data;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Callback eseguita dopo la modifica della risorsa
+     *
+     * Deve essere sovrascritta per essere utilizzata e serve per eseguire
+     * ulteriori operazioni sulle relazioni prima di essere cancellate e reinserite
+     *
+     * @access protected
+     *
+     * @param int|string $id  ID risorsa da modificare
+     * @param \SamagTech\CoreLumen\Core\BaseRepository $resource   Risorsa Modificata
+     * @param array $relations  Relazione recuperate dalla funzione getRelations()
+     *
+     * @return array    Le relazioni modificate
+     */
+    protected function afterUpdate(int|string $id, BaseRepository $resource, array $relations) : array {
         return $relations;
     }
 

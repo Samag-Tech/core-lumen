@@ -60,7 +60,7 @@ interface Service {
     /**
      * Modifica di una risorsa.
      *
-     * @param Illuminate\Http\Request $request      Dati per la modifica della risorsa
+     * @param \Illuminate\Http\Request $request      Dati per la modifica della risorsa
      * @param int|string    $id     ID della risorsa da modificare
      *
      * @return bool     TRUE se la risorsa è stata modificata, FALSE altrimenti
