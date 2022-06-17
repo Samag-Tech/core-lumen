@@ -24,6 +24,11 @@ use SamagTech\CoreLumen\Exceptions\CoreException;
  */
 class ListOptions {
 
+    /**
+     * Costante che definisce la chiave per le ricerche fulltext
+     *
+     * @var string
+     */
     const FULL_TEXT_CONDITION = 'search';
 
     /**

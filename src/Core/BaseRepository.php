@@ -189,7 +189,7 @@ abstract class BaseRepository extends Model {
                     case 'column':
                         $builder = $this->whereColumn($param['column'],  $param['value']);
                     break;
-                    case 'search':
+                    case $options::FULL_TEXT_CONDITION:
                         $builder = $this->whereFullText($param['column'],  $param['value']);
                     break;
                 }
