@@ -1,8 +1,9 @@
 <?php
 
 if (! function_exists('error')) {
+
     /**
-     * Write some errorrmation to the log.
+     * Scrive un log di errore
      *
      * @param  string  $message
      * @param  array  $context
