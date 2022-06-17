@@ -24,7 +24,7 @@ interface Service {
      *
      * @return array<int,array<string,mixed>
      */
-    public function index (Request $request) : array;
+    public function index (Request $request) : JsonResource|array;
 
     //---------------------------------------------------------------------------------------------------
 
