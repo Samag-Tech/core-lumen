@@ -20,7 +20,7 @@ interface Service {
     /**
      * Restituisce la lista delle risorse in base ai parametri delle richiesta.
      *
-     * @param Illuminate\Http\Request $request      Dati della richiesta
+     * @param \Illuminate\Http\Request $request      Dati della richiesta
      *
      * @return array<int,array<string,mixed>
      */
@@ -51,7 +51,7 @@ interface Service {
      *
      * @throws SamagTech\CoreLumen\Exceptions\CreateException
      *
-     * @return array<string,mixed>  Dati della risorsa appena creata
+     * @return JsonResource|array<string,mixed>  Dati della risorsa appena creata
      */
     public function store (Request $request) : JsonResource|array;
 
