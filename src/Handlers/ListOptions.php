@@ -477,7 +477,7 @@ class ListOptions {
                 $field = implode(',', $this->fullText[$field]);
             }
 
-            $this->params[] = [
+            $this->params[$field] = [
                 'column'    => $field,
                 'value'     => $value,
                 'condition' => $condition
@@ -530,7 +530,7 @@ class ListOptions {
 
         foreach ( $fields as $field ) {
 
-            if ( isset($options[$field]) ) {
+            if ( isset($options[$field]) && ! is_null($options[$field]) ) {
                 $this->{'set'.ucfirst($field)}($options[$field]);
             }
         }
