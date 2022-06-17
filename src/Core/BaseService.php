@@ -3,12 +3,14 @@
 use Illuminate\Http\Request;
 use SamagTech\CoreLumen\Contracts\Service;
 use SamagTech\CoreLumen\Core\BaseRepository;
+use SamagTech\CoreLumen\Handlers\ListOptions;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
 use SamagTech\CoreLumen\Traits\WithValidation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use SamagTech\CoreLumen\Traits\RequestCleanable;
 use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
-use SamagTech\CoreLumen\Handlers\ListOptions;
 
 /**
  * Definizione di base di una classe "Service"
@@ -221,17 +223,24 @@ abstract class BaseService implements Service {
         // Recupero i dati della richiesta
         $params = $request->query();
 
+        // Setup sort_by
+        $sortBy = $params['sort_by'] ?? null;
+
+        if ( ! is_null($sortBy) && is_string($sortBy) ) {
+            $sortBy = [$sortBy];
+        }
+
         // Imposto l'array delle opzioni
         $options = [
             'select'            => $this->listSelect,
             'where'             => $this->listDefaultWhere,
             'groupBy'           => $this->listGroupBy,
-            'perPage'           => $this->listPerPage,
+            'perPage'           => $params['per_page'] ?? $this->listPerPage,
             'page'              => $params['page'] ?? 1,
-            'sortBy'            => $params['sort_by'] ?? null,
+            'sortBy'            => $sortBy ,
             'disablePagination' => $this->disablePagination,
             'params'            => $params,
-            'fullText'          => $this->fullText
+            'fullText'          => $this->listFullText
         ];
 
         $listOptions = new ListOptions($options);
@@ -243,7 +252,7 @@ abstract class BaseService implements Service {
         $resources = $this->repository->getList($listOptions);
 
         // Callback post recupero dati
-        $resources = $this->afterRetrieve($resources);
+        $this->afterRetrieve($resources);
 
         return $this->jsonResource::collection($resources);
     }
@@ -448,13 +457,16 @@ abstract class BaseService implements Service {
      * Deve essere sovrascritta per essere utilizzata e serve per la modifica
      * delle opzioni
      *
+     * @link https://laravel.com/docs/9.x/pagination
+     * @link https://laravel.com/docs/9.x/eloquent-collections
+     *
      * @access protected
      *
-     * @param \SamagTech\CoreLumen\Core\BaseRepository[]     $resources   Lista delle risorse recuperate
+     * @param \Illuminate\Contracts\Pagination\Paginator|Illuminate\Database\Eloquent\Collection   $resources   Lista delle risorse recuperate
      *
-     * @return \SamagTech\CoreLumen\Core\BaseRepository[]
+     * @return Illuminate\Contracts\Pagination\Paginator|Illuminate\Database\Eloquent\Collection
      */
-    protected function afterRetrieve (array $resources) : array {
+    protected function afterRetrieve (Paginator|Collection $resources) : Paginator|Collection  {
         return $resources;
     }
 

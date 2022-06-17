@@ -1,7 +1,10 @@
 <?php namespace SamagTech\CoreLumen\Core;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use SamagTech\CoreLumen\Handlers\ListOptions;
+use Illuminate\Contracts\Pagination\Paginator;
 
 /**
  * Classe astratta per la definizione di un modello
@@ -64,6 +67,8 @@ abstract class BaseRepository extends Model {
      * In base alle opzioni vengono applicate le clausole del query builder
      *
      * @link https://laravel.com/docs/9.x/queries
+     * @link https://laravel.com/docs/9.x/pagination
+     * @link https://laravel.com/docs/9.x/eloquent-collections
      *
      * @access public
      *
@@ -92,23 +97,26 @@ abstract class BaseRepository extends Model {
      * - column         campo:column=campo2         campo = campo2
      * - search         campo:search=valore         campo MATCH AGAINST (valore)
      *
-     * @return self
+     * @return Illuminate\Contracts\Pagination\Paginator|Illuminate\Database\Eloquent\Collection
      */
-    public function getList (ListOptions $options) : self {
+    public function getList (ListOptions $options) : Paginator|Collection {
+
+        // Variabile per concatenare il query builder
+        $builder = null;
 
         // Imposta le clausole where di default
         foreach ( $options->getWhere() as $where ) {
-            $this->where($where['column'], $where['clause'], $where['value']);
-        }
-
-        // Imposto l'ordinamento
-        foreach($options->getSortBy() as $sortBy) {
-            $this->orderBy($sortBy['column'], $sortBy['order']);
+            $builder = $this->where($where['column'], $where['clause'], $where['value']);
         }
 
         // Controllo se sono impostati i group by
         if ( ! empty($groupBy = $options->getGroupBy()) ) {
-            $this->groupBy($groupBy);
+            $builder = $this->groupBy($groupBy);
+        }
+
+        // Imposto l'ordinamento
+        foreach($options->getSortBy() as $sortBy) {
+            $builder = $this->orderBy($sortBy['column'], $sortBy['order']);
         }
 
         // Se sono passati i parametri allora le applico alla query in base al query builder
@@ -118,7 +126,7 @@ abstract class BaseRepository extends Model {
 
                 // Se la condizione è null allora applica la classica clausola where
                 if ( is_null($param['condition']) ) {
-                    $this->where($param['field'], '=', $param['value']);
+                    $builder = $this->where($param['column'], '=', $param['value']);
                     continue;
                 }
 
@@ -129,79 +137,79 @@ abstract class BaseRepository extends Model {
                  */
                 switch ($param['condition']) {
                     case 'not':
-                        $this->whereNot($param['field'], $param['value']);
+                        $builder = $this->whereNot($param['column'], $param['value']);
                     break;
                     case 'like':
-                        $this->where($param['field'], 'like', $param['value']);
+                        $builder = $this->where($param['column'], 'like', '%'.$param['value'].'%');
                     break;
                     case 'gte':
-                        $this->where($param['field'], '>=', $param['value']);
+                        $builder = $this->where($param['column'], '>=', $param['value']);
                     break;
                     case 'gt':
-                        $this->where($param['field'], '>', $param['value']);
+                        $builder = $this->where($param['column'], '>', $param['value']);
                     break;
                     case 'lte':
-                        $this->where($param['field'], '<=', $param['value']);
+                        $builder = $this->where($param['column'], '<=', $param['value']);
                     break;
                     case 'lt':
-                        $this->where($param['field'], '<', $param['value']);
+                        $builder = $this->where($param['column'], '<', $param['value']);
                     break;
                     case 'bool':
-                        $this->where($param['field'], '=', $param['value']);
+                        $builder = $this->where($param['column'], '=', $param['value']);
                     break;
                     case 'in':
-                        $this->whereIn($param['field'], explode(',', $param['value']));
+                        $builder = $this->whereIn($param['column'], explode(',', $param['value']));
                     break;
                     case 'not_in':
-                        $this->whereNotIn($param['field'], explode(',', $param['value']));
+                        $builder = $this->whereNotIn($param['column'], explode(',', $param['value']));
                     break;
                     case 'null':
                         if ( $param['value'] == 'true' ) {
-                            $this->whereNull($param['field']);
+                            $builder = $this->whereNull($param['column']);
                         }
                         else if ($param['value'] == 'false') {
-                            $this->whereNotNull($param['field']);
+                            $builder = $this->whereNotNull($param['column']);
                         }
                     break;
                     case 'between':
-                        $this->whereBetween($param['field'], explode(',', $param['value']));
+                        $builder = $this->whereBetween($param['column'], explode(',', $param['value']));
                     break;
                     case 'between_not':
-                        $this->whereNotBetween($param['field'], explode(',', $param['value']));
+                        $builder = $this->whereNotBetween($param['column'], explode(',', $param['value']));
                     break;
                     case 'date':
-                        $this->whereDate($param['field'], $param['value']);
+                        $builder = $this->whereDate($param['column'], $param['value']);
                     break;
                     case 'year':
-                        $this->whereYear($param['field'], $param['value']);
+                        $builder = $this->whereYear($param['column'], $param['value']);
                     break;
                     case 'time':
-                        $this->whereTime($param['field'], $param['value']);
+                        $builder = $this->whereTime($param['column'], $param['value']);
                     break;
                     case 'column':
-                        $this->whereColumn($param['field'],  $param['value']);
+                        $builder = $this->whereColumn($param['column'],  $param['value']);
                     break;
                     case 'search':
-                        $this->whereFullText($param['field'],  $param['value']);
+                        $builder = $this->whereFullText($param['column'],  $param['value']);
                     break;
                 }
             }
 
             // Aggiunge altre clausole prima di recuperare i dati
-            $this->addCustomClause($options);
+            $builder = $this->addCustomClause($options, $builder);
         }
 
         // Se non è disabilitata la paginazione allora la utilizzo
         if ( ! $options->isDisablePagination() ) {
 
-            return $this->paginate(
+            return $builder->paginate(
                 $options->getPerPage(),
                 $options->getSelect(),
                 page: $options->getPage()
             );
         }
         else {
-            return $this->get();
+            return $builder->get();
         }
     }
 
@@ -217,7 +225,9 @@ abstract class BaseRepository extends Model {
      *
      * @return void
      */
-    protected function addCustomClause(ListOptions $options) : void {}
+    protected function addCustomClause(ListOptions $options, Builder $builder ) : Builder {
+        return $builder;
+    }
 
     //---------------------------------------------------------------------------------------------------
 }

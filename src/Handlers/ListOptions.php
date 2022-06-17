@@ -380,6 +380,9 @@ class ListOptions {
      */
     public function setSortBy(array $sortBy) : self {
 
+        // Resetto l'ordinamento
+        $this->sortBy = [];
+
         foreach ($sortBy as $value) {
 
             [$column, $order] = array_pad(explode(':', $value), 2, null);
@@ -389,8 +392,6 @@ class ListOptions {
                 'order'     => is_null($order) ? 'asc' : $order
             ];
         }
-
-        $this->sortBy = $sortBy;
 
         return $this;
     }
