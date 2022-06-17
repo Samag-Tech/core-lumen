@@ -8,22 +8,193 @@ use SamagTech\CoreLumen\Traits\WithValidation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use SamagTech\CoreLumen\Traits\RequestCleanable;
 use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
+use SamagTech\CoreLumen\Handlers\ListOptions;
 
+/**
+ * Definizione di base di una classe "Service"
+ * per la gestione delle richieste tra
+ * Controller e Database.
+ *
+ * @implements SamagTech\CoreLumen\Contracts\Service
+ *
+ * @trait SamagTech\CoreLumen\Traits\WithValidation
+ * @trait SamagTech\CoreLumen\Traits\RequestCleanable
+ *
+ * @abstract
+ *
+ * @author Alessandro Marotta <alessandro.marotta@samag.tech>
+ * @since v0.1
+ */
 abstract class BaseService implements Service {
+
     use WithValidation, RequestCleanable;
 
+    /**
+     * Tag utilizzato per la creazione dei log.
+     *
+     * Contiene il namespace della classe
+     *
+     * @var string
+     * @access protected
+     */
     private string $tag;
 
+    /**
+     * Namespace della classe JsonResource
+     * da utilizzare per la restituzione dei
+     * dati
+     *
+     * @link https://laravel.com/docs/9.x/eloquent-resources
+     *
+     * @var string
+     * @access protected
+     *
+     * Es. GenericResource::class
+     *
+     */
     protected string $jsonResource;
 
     /**
+     * Modello per gestione dei dati
+     *
      * @var SamagTech\CoreLumen\Core\BaseRepository
+     *
+     * @access protected
      */
     protected BaseRepository $repository;
 
+    /**
+     * Lista delle validazioni generiche da utilizzare sia
+     * in creazione che modifica.
+     *
+     * @var array
+     * @access protected
+     */
     protected array $genericRules = [];
+
+    /**
+     * Lista delle validazioni da utilizzare
+     * in fase di creazione
+     *
+     * @var array
+     * @access protected
+     */
     protected array $insertRules = [];
+
+    /**
+     * Lista delle validazioni da utilizzare
+     * in fase di modifica
+     *
+     * @var array
+     * @access protected
+     */
     protected array $updateRules = [];
+
+    //---------------------------------------------------------------------------------------------------
+    //                          ATTRIBUITI PER LA GESTIONE DEL LISTAGGIO
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Lista dei campi da recuperare nella select
+     *
+     * @var array<string>
+     * @access protected
+     *
+     * Default ['*']
+     */
+    protected array $listSelect = ['*'];
+
+    /**
+     * Lista delle clausole where di default
+     *
+     * vedi SamagTech\CoreLumen\Handlers\ListOptions
+     *
+     * @link https://laravel.com/docs/9.x/queries
+     *
+     * Per ogni campo deve essere passato un array con le seguenti
+     * chiavi :
+     *  - column    Colonna su cui applicare la clausola
+     *  - clause    Clausola (=, < , >= ecc..)
+     *  - value     Valore
+     *
+     * @var array<array<string,string>>
+     * @access protected
+     *
+     * Default []
+     */
+    protected array $listDefaultWhere = [];
+
+    /**
+     * Lista delle clausole group by
+     *
+     * vedi SamagTech\CoreLumen\Handlers\ListOptions
+     *
+     * @var array<string>
+     * @access protected
+     *
+     * Default []
+     */
+    protected array $listGroupBy = [];
+
+    /**
+     * Numero di righe per pagina
+     *
+     * @var int
+     * @access protected
+     *
+     * Default 50
+     */
+    protected int $listPerPage = 50;
+
+    /**
+     * Lista dei campi da utilizzare per
+     * l'ordinamento
+     *
+     * vedi SamagTech\CoreLumen\Handlers\ListOptions
+     *
+     * Per ogni ordinamento deve essere inserito il valore con questo formato
+     * <campo>:<verso>
+     *
+     * @var array<string>
+     * @access protected
+     *
+     * Default ['id:desc']
+     */
+    protected array $listSortBy = ['id:desc'];
+
+    /**
+     * Flag che indica se disabilitare la paginazione
+     *
+     * @var bool
+     *
+     * @access protected
+     *
+     * Default false
+     */
+    protected bool $disablePagination = false;
+
+    /**
+     * Configurazione per le clausole di fullText
+     *
+     * vedi SamagTech\CoreLumen\Handlers\ListOptions
+     *
+     * Per utilizzare un fulltext si deve definire la chiave
+     * del fulltext e utilizzare la condizione "search" nei filtri.
+     *
+     * Es. Chiave -> fullname, FullText (firstname,lastname)
+     *
+     * Il filtro da passare è fullname:search=<valore>
+     * mentre l'array deve essere popolato così:
+     * [
+     *      'fullname' => ['firstname', 'lastname']
+     * ]
+     *
+     * @var array
+     * @access protected
+     *
+     * Default []
+     */
+    protected array $listFullText = [];
 
     //---------------------------------------------------------------------------------------------------
 
@@ -33,10 +204,48 @@ abstract class BaseService implements Service {
      * @param SamagTech\CoreLumen\Core\BaseRepository $repository     Modello per la gestione dei dati
      */
     public function __construct(BaseRepository $repository) {
+
         $this->repository = $repository;
 
         // Imposto il tag per i log
         $this->tag = get_class($this);
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
+    public function index(Request $request): JsonResource|array {
+
+        // Recupero i dati della richiesta
+        $params = $request->query();
+
+        // Imposto l'array delle opzioni
+        $options = [
+            'select'            => $this->listSelect,
+            'where'             => $this->listDefaultWhere,
+            'groupBy'           => $this->listGroupBy,
+            'perPage'           => $this->listPerPage,
+            'page'              => $params['page'] ?? 1,
+            'sortBy'            => $params['sort_by'] ?? null,
+            'disablePagination' => $this->disablePagination,
+            'params'            => $params,
+            'fullText'          => $this->fullText
+        ];
+
+        $listOptions = new ListOptions($options);
+
+        // Callback prima di effettuare il listaggio
+        $listOptions = $this->beforeRetrieve($listOptions);
+
+        // Recupero delle risorse
+        $resources = $this->repository->getList($listOptions);
+
+        // Callback post recupero dati
+        $resources = $this->afterRetrieve($resources);
+
+        return $this->jsonResource::collection($resources);
     }
 
     //---------------------------------------------------------------------------------------------------
@@ -213,6 +422,41 @@ abstract class BaseService implements Service {
         return $deleted;
     }
 
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Callback eseguita prima del recupero della lista delle risorsa.
+     *
+     * Deve essere sovrascritta per essere utilizzata e serve per la modifica
+     * delle opzioni
+     *
+     * @access protected
+     *
+     * @param \SamagTech\CoreLumen\Handlers\ListOptions    $listOptions
+     *
+     * @return \SamagTech\CoreLumen\Handlers\ListOptions
+     */
+    protected function beforeRetrieve (ListOptions $listOptions) : ListOptions {
+        return $listOptions;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Callback eseguita prima del recupero della lista delle risorsa.
+     *
+     * Deve essere sovrascritta per essere utilizzata e serve per la modifica
+     * delle opzioni
+     *
+     * @access protected
+     *
+     * @param \SamagTech\CoreLumen\Core\BaseRepository[]     $resources   Lista delle risorse recuperate
+     *
+     * @return \SamagTech\CoreLumen\Core\BaseRepository[]
+     */
+    protected function afterRetrieve (array $resources) : array {
+        return $resources;
+    }
 
     //---------------------------------------------------------------------------------------------------
 
