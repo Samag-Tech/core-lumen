@@ -82,12 +82,12 @@ trait WithValidation {
      *
      * @access public
      *
-     * @param ...$validations   Lista delle validazione da settare
+     * @param array $validations   Lista delle validazione da settare
      *
      * @return self
      */
-    public function setValidations(...$validations) : self {
-        $this->validations = array_merge($validations);
+    public function setValidations(array $validations) : self {
+        $this->validations = array_filter($validations);
         return $this;
     }
 
