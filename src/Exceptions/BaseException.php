@@ -46,10 +46,10 @@ abstract class BaseException extends Exception {
      * @param int           $httpCode   Codice di stato
      *
      */
-    public function __construct(?string $message = null, int $httpCode = 400) {
+    public function __construct(?string $message = null, ?int $httpCode = null) {
 
         $message = $message ?? $this->messageCustom;
-        $this->httpCode = $httpCode;
+        $this->httpCode = $httpCode ?? $this->httpCode;
 
         parent::__construct($message);
     }
