@@ -2,14 +2,14 @@
 
 use Illuminate\Http\Request;
 use SamagTech\CoreLumen\Contracts\Service;
+use Illuminate\Database\Eloquent\Collection;
 use SamagTech\CoreLumen\Core\BaseRepository;
 use SamagTech\CoreLumen\Handlers\ListOptions;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Validation\ValidationException;
 use SamagTech\CoreLumen\Traits\WithValidation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use SamagTech\CoreLumen\Traits\RequestCleanable;
+use SamagTech\CoreLumen\Exceptions\ValidationException;
 use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
 
 /**
@@ -293,7 +293,7 @@ abstract class BaseService implements Service {
         info($this->tag. ': Richiesta creazione della risorsa', ['request' => $request]);
 
         // Imposto e lancio le validazioni
-        $this->setValidations($this->genericRules, $this->insertRules);
+        $this->setValidations(array_merge($this->genericRules, $this->insertRules));
 
         if ( ! $this->runValidation($request) ) {
 
@@ -372,7 +372,8 @@ abstract class BaseService implements Service {
         $relations = $this->getRelations($data);
 
         // Modifica la risorsa
-        $updated = $this->repository->where($this->repository->getKeyName(), $id)->update($data);
+        $resource->fill($data);
+        $updated = $resource->save();
 
         info($this->tag. ': Modifica della risorsa', ['resource' => $resource, 'updated' => $updated > 0]);
 
@@ -634,7 +635,6 @@ abstract class BaseService implements Service {
         // Ciclo l'array data per trovare sottoarray,
         // se ci sono li estraggo
         foreach ( $data as $key => $value ) {
-
             if ( is_array($value) ) {
                 $relations[$key] = $value;
                 unset($data[$key]);
