@@ -46,18 +46,7 @@ abstract class BaseRepository extends Model {
     /**
      * {@inheritdoc}
      */
-    public $timestamps = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    const CREATED_AT = 'created_date';
-
-    /**
-     * {@inheritdoc}
-     */
-    const UPDATED_AT = 'updated_date';
-
+    public $timestamps = true;
 
     //---------------------------------------------------------------------------------------------------
 
