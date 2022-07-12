@@ -128,7 +128,7 @@ trait WithValidation {
             $istance = new $validate($request);
 
             if ( ! $istance instanceof BaseValidationRequest ) {
-                throw new CoreException(__('core.with_validation_exception'));
+                throw new CoreException('La validazione deve estendere BaseValidationRequest');
             }
 
             if ( ! $istance->isValid() ) {
