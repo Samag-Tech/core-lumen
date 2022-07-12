@@ -82,11 +82,11 @@ trait WithValidation {
      *
      * @access public
      *
-     * @param array|BaseValidationRequest $validations   Validazione da settare
+     * @param array|string $validations   Validazione da settare
      *
      * @return self
      */
-    public function setValidations(array|BaseValidationRequest $validations) : self {
+    public function setValidations(array|string $validations) : self {
 
         if ( ! is_array($validations) ) {
             $this->validations = [$validations];
