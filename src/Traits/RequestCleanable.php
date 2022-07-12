@@ -53,7 +53,7 @@ trait RequestCleanable {
     protected function cleanRequest(Request $request) : array {
 
         if ( empty($this->onlyUsedFields) ) {
-            throw new CoreException('La richiesta deve avere almeno un campo');
+            throw new CoreException(__('core.request_cleanable_exception'));
         }
 
         return $request->only($this->onlyUsedFields);

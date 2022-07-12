@@ -17,13 +17,21 @@ class ResourceNotFoundException extends BaseException {
      * {@inheritdoc}
      *
      */
-    protected string $messageCustom = 'Risorsa non trovata';
+    protected string $messageCustom;
 
     /**
      * {@inheritdoc}
      *
      */
     protected int $httpCode = 404;
+
+    public function __construct(?string $message = null, ?int $httpCode = null) {
+
+        $this->messageCustom = __('core.resource_not_found_message');
+
+        parent::__construct($message, $httpCode);
+
+    }
 
 }
 

@@ -79,12 +79,12 @@ abstract class BaseController extends LumenController implements Factory {
 
         // Per funzionare il modello deve essere impostato
         if ( ! isset($this->model) ) {
-            die('Modello non impostato');
+            die(__('core.model_not_set'));
         }
 
         // Per funzionare il servizio di default deve essere impostato
         if ( ! isset($this->defaultService) ) {
-            die('Servizio di default non impostato');
+            die(__('core.default_service_not_set'));
         }
 
         // Istanzia il modello
@@ -196,10 +196,10 @@ abstract class BaseController extends LumenController implements Factory {
             $updated = $this->service->update($request, $id);
 
             if ( ! $updated ) {
-                return respondFail('Errore durante la modifica');
+                return respondFail(__('core.update_failed'));
             }
 
-            return respond(['message' => 'Modifica effettuata con successo']);
+            return respond(['message' => __('core.update_success')]);
         }
         catch(ValidationException $e ) {
             return respondFail($e->getValidationErrors(), $e->getHttpCode());
@@ -226,10 +226,10 @@ abstract class BaseController extends LumenController implements Factory {
             $deleted = $this->service->delete($id);
 
             if ( ! $deleted ) {
-                return respondFail('Errore durante la cancellazione');
+                return respondFail(__('core.delete_failed'));
             }
 
-            return respond(['message' => 'Cancellazione effettuata con successo']);
+            return respond(['message' => __('core.delete_success')]);
         }
         catch (BaseException $e ) {
             return respondFail($e->getMessage(), $e->getHttpCode());
