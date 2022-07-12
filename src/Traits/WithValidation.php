@@ -78,16 +78,23 @@ trait WithValidation {
     //---------------------------------------------------------------------------------------------------
 
     /**
-     * Setta la lista delle validazioni passate
+     * Setta le validazioni passate
      *
      * @access public
      *
-     * @param array $validations   Lista delle validazione da settare
+     * @param array|BaseValidationRequest $validations   Validazione da settare
      *
      * @return self
      */
-    public function setValidations(array $validations) : self {
-        $this->validations = array_filter($validations);
+    public function setValidations(array|BaseValidationRequest $validations) : self {
+
+        if ( ! is_array($validations) ) {
+            $this->validations = [$validations];
+        }
+        else {
+            $this->validations = array_filter($validations);
+        }
+
         return $this;
     }
 
