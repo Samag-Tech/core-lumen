@@ -1,34 +1,35 @@
 <?php namespace SamagTech\CoreLumen\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use SamagTech\CoreLumen\Console\ServiceKeyTableCommand;
 
-class Generator extends ServiceProvider {
+/**
+ * Implemetazione del generatore
+ *
+ * @extends BaseGeneratorProvider
+ *
+ * @author Alessandro Marotta <alessandro.marotta@samag.tech>
+ */
+class GeneratorProvider extends BaseGeneratorProvider {
 
     protected $commands = [
-        'ServiceKeyTable'   => 'command.core.servicekeytable'
+        'ServiceKeyTable'   => 'servicekeytable'
     ];
 
-    public function register() {
-        $this->registerCommands($this->commands);
-    }
+    //-----------------------------------------------------------------------
 
-    public function registerCommands(array $commands) {
+    /**
+     * Registra il comando per la creazione della migrazione della tabella
+     * 'services_keys'
+     *
+     * @return void
+     */
+    public function registerServiceKeyTableCommand() : void {
 
-        foreach ( array_keys($commands) as $command) {
-            $method = "register{$command}Command";
-
-            call_user_func_array([$this, $method], []);
-        }
-
-        $this->commands(array_values($command));
-    }
-
-    public function registerServiceKeyTableCommand() {
-
-        app()->singleton('command.core.servicekeytable', function ($app) {
+        app()->singleton($this->getPrefixBinding().'servicekeytable', function ($app) {
             return new ServiceKeyTableCommand($app['files']);
         });
+
     }
 
+    //-----------------------------------------------------------------------
 }
