@@ -11,7 +11,7 @@ use SamagTech\CoreLumen\Console\ServiceKeyTableCommand;
  */
 class GeneratorProvider extends BaseGeneratorProvider {
 
-    protected $commands = [
+    protected array $commands = [
         'ServiceKeyTable'   => 'servicekeytable'
     ];
 
