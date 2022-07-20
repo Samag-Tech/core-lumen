@@ -1,6 +1,7 @@
 <?php namespace SamagTech\CoreLumen\Core;
 
 use Illuminate\Http\Request;
+use SamagTech\CoreLumen\Contracts\Logger;
 use SamagTech\CoreLumen\Contracts\Service;
 use Illuminate\Database\Eloquent\Collection;
 use SamagTech\CoreLumen\Core\BaseRepository;
@@ -64,6 +65,15 @@ abstract class BaseService implements Service {
      * @access protected
      */
     protected BaseRepository $repository;
+
+    /**
+     * Logger della classe
+     *
+     * @var SamagTech\CoreLumen\Contracts\Logger
+     *
+     * @access protected
+     */
+    protected Logger $logger;
 
     /**
      * Lista delle validazioni generiche da utilizzare sia
@@ -205,9 +215,12 @@ abstract class BaseService implements Service {
      *
      * @param SamagTech\CoreLumen\Core\BaseRepository $repository     Modello per la gestione dei dati
      */
-    public function __construct(BaseRepository $repository) {
+    public function __construct(BaseRepository $repository, Logger $logger) {
 
         $this->repository = $repository;
+        $this->logger = $logger;
+
+        $this->logger->setService($this);
 
         // Imposto il tag per i log
         $this->tag = get_class($this);
@@ -316,6 +329,8 @@ abstract class BaseService implements Service {
 
         info($this->tag. ': Creazione della risorsa', ['resource' => $resource]);
 
+        $this->logger->write('store', $resource->id, $resource);
+
         // Lancio la callback dopo aver creato le risorse
         $relations = $this->afterInsert($resource, $relations);
 
@@ -343,6 +358,9 @@ abstract class BaseService implements Service {
         info($this->tag. ': Richiesta modifica di una risorsa', ['id' => $id, 'request' => $request]);
 
         $resource = $this->repository->find($id);
+
+        // Salvo i vecchi dati
+        $old_data = $resource;
 
         // Se la risorsa non esiste allora sollevo un eccezione
         if ( is_null($resource) ) {
@@ -377,6 +395,8 @@ abstract class BaseService implements Service {
 
         info($this->tag. ': Modifica della risorsa', ['resource' => $resource, 'updated' => $updated > 0]);
 
+        $this->logger->write('update', $id, $old_data, $resource);
+
         // Lancio la callback dopo aver modificato la risorsa
         $relations = $this->afterUpdate($id, $resource, $relations);
 
@@ -409,6 +429,9 @@ abstract class BaseService implements Service {
 
         $resource = $this->repository->find($id);
 
+        // Salvo i vecchi dati
+        $old_data = $resource;
+
         // Se la risorsa non esiste allora sollevo un eccezione
         if ( is_null($resource) ) {
 
@@ -422,6 +445,8 @@ abstract class BaseService implements Service {
 
         $deleted = $resource->delete();
 
+        $this->logger->write('delete', $id, $old_data, $resource);
+
         // Lancio una callback dopo la cancellazione
         $this->afterDelete($resource, $id);
 
@@ -430,6 +455,17 @@ abstract class BaseService implements Service {
         }
 
         return $deleted;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Restituisce il repository del servizio
+     *
+     * @return BaseRepository
+     */
+    public function getRepository () : BaseRepository {
+        return $this->repository;
     }
 
     //---------------------------------------------------------------------------------------------------

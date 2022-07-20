@@ -1,17 +1,20 @@
 <?php namespace SamagTech\CoreLumen\Core;
 
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
+use SamagTech\CoreLumen\Models\Log;
+use SamagTech\CoreLumen\Contracts\Logger;
 use SamagTech\CoreLumen\Contracts\Factory;
 use SamagTech\CoreLumen\Contracts\Service;
+use SamagTech\CoreLumen\Handlers\DBLogger;
+use SamagTech\CoreLumen\Models\ServiceKey;
 use SamagTech\CoreLumen\Core\BaseRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
 use SamagTech\CoreLumen\Exceptions\BaseException;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use InvalidArgumentException;
 use SamagTech\CoreLumen\Exceptions\ValidationException;
 use Laravel\Lumen\Routing\Controller as LumenController;
-use SamagTech\CoreLumen\Models\ServiceKey;
 
 /**
  * Definizione del controller di base con i metodi
@@ -93,10 +96,16 @@ abstract class BaseController extends LumenController implements Factory {
         $this->repository = new $this->model;
 
         // Recupero il token
-        $token = $this->getAppToken();
+        $user = $this->getUser();
 
         // Inizializza il servizio da utilizzare
-        $this->service = $this->makeService($serviceKey, $token);
+        $this->service = $this->makeService($serviceKey, $user?->app_token);
+
+        // Implementazione Logger
+        app()->singleton(Logger::class, function ($app, $user) {
+            return new DBLogger(new Log, $user);
+        });
+
     }
 
     //---------------------------------------------------------------------------------------------------
@@ -119,12 +128,12 @@ abstract class BaseController extends LumenController implements Factory {
             $class = $this->defaultService.$key->suffix;
 
             if ( class_exists($class) ) {
-                return new $class($this->repository);
+                return new $class($this->repository, app()->make(Logger::class));
             }
 
         }
 
-        return new $this->defaultService($this->repository);
+        return new $this->defaultService($this->repository, app()->make(Logger::class));
     }
 
 
@@ -259,22 +268,21 @@ abstract class BaseController extends LumenController implements Factory {
     //---------------------------------------------------------------------------------------------------
 
     /**
-     * Recupero il token dell'utente
+     * Recupero l'utente
      *
      * @access private
      *
-     * @return string|null
+     * @return mixed|null
      */
-    private function getAppToken () : ?string {
+    private function getUser () {
 
         try {
-            $token = auth()->user()?->app_token;
+            return auth()->user();
         }
         catch (InvalidArgumentException $e) {
-            $token = null;
+            return null;
         }
 
-        return $token;
     }
 
     //---------------------------------------------------------------------------------------------------

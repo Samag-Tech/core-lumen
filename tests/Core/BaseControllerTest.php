@@ -2,6 +2,7 @@
 
 use Tests\TestCase;
 use Ramsey\Uuid\Uuid;
+use SamagTech\CoreLumen\Contracts\Logger;
 use Tests\Support\Utils;
 use Tests\Support\DummyService;
 use SamagTech\CoreLumen\Models\ServiceKey;
@@ -20,10 +21,17 @@ class BaseControllerTest extends TestCase {
             ->getMock();
 
         $uuid = Uuid::uuid4();
+
         $serviceKey->method('find')->willReturn($this->returnValue((object) [
             'id'        => $uuid,
             'suffix'    => 'Foo'
         ]));
+
+
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        app()->instance(Logger::class, $logger);
+
 
         $baseController = new class($serviceKey) extends BaseController {
 
@@ -51,6 +59,10 @@ class BaseControllerTest extends TestCase {
             'id'        => $uuid,
             'suffix'    => 'Suffix'
         ]));
+
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        app()->instance(Logger::class, $logger);
 
         $baseController = new class($serviceKey) extends BaseController {
 

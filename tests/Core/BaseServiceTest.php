@@ -1,11 +1,14 @@
 <?php namespace Tests\Core;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-use SamagTech\CoreLumen\Core\BaseRepository;
-use SamagTech\CoreLumen\Core\BaseService;
-use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
-use Tests\Support\Utils;
 use Tests\TestCase;
+use Tests\Support\Utils;
+use SamagTech\CoreLumen\Models\Log;
+use SamagTech\CoreLumen\Contracts\Logger;
+use SamagTech\CoreLumen\Core\BaseService;
+use SamagTech\CoreLumen\Handlers\DBLogger;
+use SamagTech\CoreLumen\Core\BaseRepository;
+use Illuminate\Http\Resources\Json\JsonResource;
+use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
 
 class BaseServiceTest extends TestCase {
 
@@ -22,7 +25,9 @@ class BaseServiceTest extends TestCase {
 
         $repository->id = 1;
 
-        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository]);
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository, $logger]);
 
         Utils::usePrivateProperty($mock, 'jsonResource', JsonResource::class);
 
@@ -42,7 +47,9 @@ class BaseServiceTest extends TestCase {
 
         $repository->method('find')->willReturn(null);
 
-        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository]);
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository, $logger]);
 
         $mock->show(1);
     }
@@ -60,7 +67,11 @@ class BaseServiceTest extends TestCase {
 
         $repository->method('find')->willReturn(null);
 
-        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository]);
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        app()->instance(Logger::class, $logger);
+
+        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository, $logger]);
 
         $mock->delete(1);
     }
@@ -79,7 +90,11 @@ class BaseServiceTest extends TestCase {
 
         $repository->method('delete')->willReturn(true);
 
-        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository]);
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        $logger->expects($this->once())->method('write');
+
+        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository, $logger]);
 
         $this->assertTrue($mock->delete(1));
     }
@@ -98,7 +113,9 @@ class BaseServiceTest extends TestCase {
 
         $repository->method('delete')->willReturn(false);
 
-        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository]);
+        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        $mock = $this->getMockForAbstractClass(BaseService::class, [$repository, $logger]);
 
         $this->assertFalse($mock->delete(1));
     }
