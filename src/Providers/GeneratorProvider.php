@@ -56,8 +56,7 @@ class GeneratorProvider extends BaseGeneratorProvider {
     //-----------------------------------------------------------------------
 
     /**
-     * Registra il comando per la creazione di una nuova chiave della tabella
-     * 'services_keys'
+     * Registra il comando per l'aggiunta di un nuovo servizio
      *
      * @return void
      */
@@ -72,8 +71,7 @@ class GeneratorProvider extends BaseGeneratorProvider {
     //-----------------------------------------------------------------------
 
     /**
-     * Registra il comando per la creazione di una nuova chiave della tabella
-     * 'services_keys'
+     * Registra il comando per la modifica del suffisso di un servizio
      *
      * @return void
      */
