@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceKey extends Model {
 
     protected $fillable = [
-        'id',
         'suffix'
     ];
 
