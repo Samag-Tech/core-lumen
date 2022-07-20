@@ -27,5 +27,5 @@ class Log extends Model {
 
     protected $keyType = 'int';
 
-    public $timestamps = false;
+    public $timestamps = true;
 }
