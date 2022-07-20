@@ -8,8 +8,10 @@ use SamagTech\CoreLumen\Core\BaseRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
 use SamagTech\CoreLumen\Exceptions\BaseException;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use InvalidArgumentException;
 use SamagTech\CoreLumen\Exceptions\ValidationException;
 use Laravel\Lumen\Routing\Controller as LumenController;
+use SamagTech\CoreLumen\Models\ServiceKey;
 
 /**
  * Definizione del controller di base con i metodi
@@ -75,7 +77,7 @@ abstract class BaseController extends LumenController implements Factory {
      * Costruttore.
      *
      */
-    public function __construct() {
+    public function __construct(ServiceKey $serviceKey) {
 
         // Per funzionare il modello deve essere impostato
         if ( ! isset($this->model) ) {
@@ -90,8 +92,11 @@ abstract class BaseController extends LumenController implements Factory {
         // Istanzia il modello
         $this->repository = new $this->model;
 
+        // Recupero il token
+        $token = $this->getAppToken();
+
         // Inizializza il servizio da utilizzare
-        $this->service = $this->makeService();
+        $this->service = $this->makeService($serviceKey, $token);
     }
 
     //---------------------------------------------------------------------------------------------------
@@ -100,9 +105,24 @@ abstract class BaseController extends LumenController implements Factory {
      * {@inheritDoc}
      *
      */
-    public function makeService(?string $token = null): Service {
+    public function makeService(ServiceKey $serviceKey, ?string $token = null): Service {
 
-        // @TODO Gestione multi-service
+        /**
+         * Controllo se esiste il token e se combacia con un servizio registrato.
+         *
+         * Se il token è presente allora controllo che ci sia il servizio di riferimento,
+         * in caso contrario restituisco il servizio di default.
+         *
+         */
+        if ( ! is_null($token) && ! is_null($key = $serviceKey->find($token)) ) {
+
+            $class = $this->defaultService.$key->suffix;
+
+            if ( class_exists($class) ) {
+                return new $class($this->repository);
+            }
+
+        }
 
         return new $this->defaultService($this->repository);
     }
@@ -234,6 +254,27 @@ abstract class BaseController extends LumenController implements Factory {
         catch (BaseException $e ) {
             return respondFail($e->getMessage(), $e->getHttpCode());
         }
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Recupero il token dell'utente
+     *
+     * @access private
+     *
+     * @return string|null
+     */
+    private function getAppToken () : ?string {
+
+        try {
+            $token = auth()->user()?->app_token;
+        }
+        catch (InvalidArgumentException $e) {
+            $token = null;
+        }
+
+        return $token;
     }
 
     //---------------------------------------------------------------------------------------------------
