@@ -1,3 +1,7 @@
+# [v1.1.1] - Patch 2022-07-21
+
+- Fix comandi
+
 # [v1.1.0] - Release 2022-07-21
 
 - Gestione log nel database
