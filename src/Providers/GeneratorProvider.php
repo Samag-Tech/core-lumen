@@ -1,9 +1,11 @@
 <?php namespace SamagTech\CoreLumen\Providers;
 
 use SamagTech\CoreLumen\Console\LogsTableCommand;
+use SamagTech\CoreLumen\Console\SetupSystemCommand;
 use SamagTech\CoreLumen\Console\AddServiceKeyCommand;
 use SamagTech\CoreLumen\Console\ServiceKeyTableCommand;
 use SamagTech\CoreLumen\Console\UpdateServiceKeyCommand;
+use SamagTech\CoreLumen\Console\UpdateOptionSystemCommand;
 
 /**
  * Implemetazione del generatore
@@ -15,10 +17,12 @@ use SamagTech\CoreLumen\Console\UpdateServiceKeyCommand;
 class GeneratorProvider extends BaseGeneratorProvider {
 
     protected array $commands = [
-        'ServiceKeyTable'   => 'servicekeytable',
-        'LogsTable'         => 'logtable',
-        'AddServiceKey'     => 'addservicekey',
-        'UpdateServiceKey'  => 'updateservicekey',
+        'ServiceKeyTable'       => 'servicekeytable',
+        'LogsTable'             => 'logtable',
+        'AddServiceKey'         => 'addservicekey',
+        'UpdateServiceKey'      => 'updateservicekey',
+        'SetupSystem'           => 'setupsystem',
+        'UpdateOptionSystem'    => 'updateoptionsystem',
     ];
 
     //-----------------------------------------------------------------------
@@ -79,6 +83,36 @@ class GeneratorProvider extends BaseGeneratorProvider {
 
         app()->singleton($this->getPrefixBinding().'updateservicekey', function ($app) {
             return new UpdateServiceKeyCommand();
+        });
+
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Registra il comando l'impostazione iniziale della gestione del sistema
+     *
+     * @return void
+     */
+    public function registerSetupSystemCommand() : void {
+
+        app()->singleton($this->getPrefixBinding().'setupsystem', function ($app) {
+            return new SetupSystemCommand($app['files']);
+        });
+
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Registra il comando l'impostazione iniziale della gestione del sistema
+     *
+     * @return void
+     */
+    public function registerUpdateOptionSystemCommand() : void {
+
+        app()->singleton($this->getPrefixBinding().'updateoptionsystem', function ($app) {
+            return new UpdateOptionSystemCommand();
         });
 
     }

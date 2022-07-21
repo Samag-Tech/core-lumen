@@ -39,6 +39,7 @@ class UpdateServiceKeyCommand extends Command {
 
         if ( is_null($key)) {
             $this->error('Deve essere impostata la chiave con l\'opzione --key=XXX');
+            return;
         }
 
         $service = $serviceKey->find($key);
