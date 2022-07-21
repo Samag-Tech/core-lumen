@@ -25,11 +25,11 @@ class SetupSystemCommand extends BaseGeneratorCommand {
 
         $filename = $this->getFilename();
 
-        $this->filesystem->put($this->getFilePath().$filename, $this->getStub());
+        $this->filesystem->put($this->getFilePath().$filename, $this->filesystem->get($this->getStub()));
 
         $this->info('Migrazione system creata');
 
-        Artisan::call('migrate', ['--path=' => $this->getFilePath().$filename]);
+        Artisan::call('migrate', ['--path' => $this->getFilePath().$filename]);
 
         $this->info('Migrazione lanciata');
 

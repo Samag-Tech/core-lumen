@@ -14,7 +14,7 @@ use SamagTech\CoreLumen\Models\System;
  */
 class UpdateOptionSystemCommand extends Command {
 
-    protected $name = 'core:update-option-system {--option=} {--value=}';
+    protected $signature = 'core:update-option-system {--option=} {--value=}';
 
     protected $description = 'Modifica un opzione di sistema';
 
