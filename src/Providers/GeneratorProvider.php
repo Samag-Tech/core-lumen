@@ -16,9 +16,9 @@ class GeneratorProvider extends BaseGeneratorProvider {
 
     protected array $commands = [
         'ServiceKeyTable'   => 'servicekeytable',
-        'LogsTable'   => 'logtable',
+        'LogsTable'         => 'logtable',
         'AddServiceKey'     => 'addservicekey',
-        'UpdateServiceKey'     => 'updateservicekey',
+        'UpdateServiceKey'  => 'updateservicekey',
     ];
 
     //-----------------------------------------------------------------------

@@ -1,6 +1,7 @@
 <?php namespace SamagTech\CoreLumen\Handlers;
 
 use SamagTech\CoreLumen\Models\Log;
+use SamagTech\CoreLumen\Models\System;
 use SamagTech\CoreLumen\Contracts\Logger;
 use SamagTech\CoreLumen\Core\BaseService;
 
@@ -45,6 +46,17 @@ class DBLogger implements Logger {
     //-----------------------------------------------------------------------
 
     /**
+     * Modello per la gestione delle opzioni di sistema
+     *
+     * @var System
+     *
+     * @access private
+     */
+    private System $system;
+
+    //-----------------------------------------------------------------------
+
+    /**
      * Costruttore
      *
      * @param Log $log  Modello
@@ -53,6 +65,8 @@ class DBLogger implements Logger {
     public function __construct(Log $log, $user = null) {
         $this->log = $log;
         $this->user = $user;
+
+        $this->system = app()->make(System::class);
     }
 
     //-----------------------------------------------------------------------
@@ -72,6 +86,10 @@ class DBLogger implements Logger {
      *
      */
     public function write (string $type, int|string $rowId, $old_data, $new_data = null) : void {
+
+        if ( ! $this->system->find('logger')?->value ) {
+            return;
+        }
 
         $this->log->create([
             'table'      => $this->service->getRepository()->getTable(),

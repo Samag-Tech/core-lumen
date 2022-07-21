@@ -2,6 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 use SamagTech\CoreLumen\Models\ServiceKey;
+use SamagTech\CoreLumen\Models\System;
 
 /**
  * Provider per caricamenti generici
@@ -15,6 +16,10 @@ class GenericProvider extends ServiceProvider {
 
         app()->bind(ServiceKey::class, function ($app) {
             return new ServiceKey();
+        });
+
+        app()->bind(System::class, function ($app) {
+            return new System();
         });
     }
 
