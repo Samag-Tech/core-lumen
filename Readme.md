@@ -1,3 +1,7 @@
+# [v1.1.2] - Patch 2022-09-16
+
+- Fix inizializzazione logger
+
 # [v1.1.1] - Patch 2022-07-21
 
 - Fix comandi
