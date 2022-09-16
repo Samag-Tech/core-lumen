@@ -98,13 +98,13 @@ abstract class BaseController extends LumenController implements Factory {
         // Recupero il token
         $user = $this->getUser();
 
-        // Inizializza il servizio da utilizzare
-        $this->service = $this->makeService($serviceKey, $user?->app_token);
-
         // Implementazione Logger
         app()->singleton(Logger::class, function ($app, $user) {
             return new DBLogger(new Log, $user);
         });
+
+        // Inizializza il servizio da utilizzare
+        $this->service = $this->makeService($serviceKey, $user?->app_token);
 
     }
 
