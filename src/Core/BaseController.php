@@ -88,7 +88,9 @@ abstract class BaseController extends LumenController implements Factory {
      * Costruttore.
      *
      */
-    public function __construct(ServiceKey $serviceKey) {
+    public function __construct(ServiceKey $serviceKey, Logger $logger) {
+
+        $this->logger = $logger;
 
         // Per funzionare il modello deve essere impostato
         if ( ! isset($this->model) ) {
@@ -107,8 +109,6 @@ abstract class BaseController extends LumenController implements Factory {
         $user = $this->getUser();
 
         // Inizializzo il logger
-        $this->logger = app()->make(Logger::class);
-
         $this->logger->setUser($user);
 
         // Inizializza il servizio da utilizzare
