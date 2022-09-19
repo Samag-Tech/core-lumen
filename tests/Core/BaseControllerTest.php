@@ -11,6 +11,13 @@ use Tests\Support\DummyServiceSuffix;
 
 class BaseControllerTest extends TestCase {
 
+    // function setUp(): void
+    // {
+    //     $logger = $this->getMockForAbstractClass(Logger::class, mockedMethods: ['setUser']);
+
+    //     app()->instance(Logger::class, $logger);
+    // }
+
     /**
      * @test
      */
@@ -28,12 +35,12 @@ class BaseControllerTest extends TestCase {
         ]));
 
 
-        $logger = $this->getMockForAbstractClass(Logger::class);
+        // $logger = $this->getMockForAbstractClass(Logger::class);
+        $logger = $this->getMockForAbstractClass(Logger::class, mockedMethods: ['setUser']);
 
         app()->instance(Logger::class, $logger);
 
-
-        $baseController = new class($serviceKey) extends BaseController {
+        $baseController = new class($serviceKey, $logger) extends BaseController {
 
             protected string $model = 'Tests\Support\DummyModel';
 
@@ -60,11 +67,12 @@ class BaseControllerTest extends TestCase {
             'suffix'    => 'Suffix'
         ]));
 
-        $logger = $this->getMockForAbstractClass(Logger::class);
+
+        $logger = $this->getMockForAbstractClass(Logger::class, mockedMethods: ['setUser']);
 
         app()->instance(Logger::class, $logger);
 
-        $baseController = new class($serviceKey) extends BaseController {
+        $baseController = new class($serviceKey, $logger) extends BaseController {
 
             protected string $model = 'Tests\Support\DummyModel';
 
