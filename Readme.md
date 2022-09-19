@@ -1,3 +1,7 @@
+# [v1.1.3] - Patch 2022-09-19
+
+- Fix implementazione dei logger
+
 # [v1.1.2] - Patch 2022-09-16
 
 - Fix inizializzazione logger
