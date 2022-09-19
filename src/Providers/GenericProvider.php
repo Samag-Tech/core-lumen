@@ -3,6 +3,7 @@
 use SamagTech\CoreLumen\Models\Log;
 use SamagTech\CoreLumen\Models\System;
 use Illuminate\Support\ServiceProvider;
+use SamagTech\CoreLumen\Contracts\Logger;
 use SamagTech\CoreLumen\Handlers\DBLogger;
 use SamagTech\CoreLumen\Models\ServiceKey;
 
