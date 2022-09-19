@@ -72,6 +72,17 @@ class DBLogger implements Logger {
     //-----------------------------------------------------------------------
 
     /**
+     * Imposta l'utente nei log
+     *
+     * @param object|array $user
+     */
+    public function setUser (object|array $user) {
+        $this->user = $user;
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
      * {@inheritDoc}
      *
      */

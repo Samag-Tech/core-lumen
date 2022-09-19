@@ -3,11 +3,9 @@
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
-use SamagTech\CoreLumen\Models\Log;
 use SamagTech\CoreLumen\Contracts\Logger;
 use SamagTech\CoreLumen\Contracts\Factory;
 use SamagTech\CoreLumen\Contracts\Service;
-use SamagTech\CoreLumen\Handlers\DBLogger;
 use SamagTech\CoreLumen\Models\ServiceKey;
 use SamagTech\CoreLumen\Core\BaseRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,6 +24,7 @@ use Laravel\Lumen\Routing\Controller as LumenController;
  * @property string $model
  * @property string $defaultService
  * @property Service  $service
+ * @property Logger  $logger
  *
  * @author Alessandro Marotta <alessandro.marotta@samag.tech>
  * @since v0.1
@@ -74,6 +73,15 @@ abstract class BaseController extends LumenController implements Factory {
      */
     protected Service $service;
 
+    /**
+     * Istanza logger
+     *
+     * @var SamagTech\CoreLumen\Contracts\Logger
+     *
+     * @access protected
+     */
+    protected Logger $logger;
+
     //---------------------------------------------------------------------------------------------------
 
     /**
@@ -98,13 +106,13 @@ abstract class BaseController extends LumenController implements Factory {
         // Recupero il token
         $user = $this->getUser();
 
-        // Implementazione Logger
-        app()->singleton(Logger::class, function ($app, $user) {
-            return new DBLogger(new Log, $user);
-        });
+        // Inizializzo il logger
+        $this->logger = app()->make(Logger::class);
+
+        $this->logger->setUser($user);
 
         // Inizializza il servizio da utilizzare
-        $this->service = $this->makeService($serviceKey, $user?->app_token);
+        $this->service = $this->makeService($serviceKey, $user->app_token ?? null);
 
     }
 
@@ -128,12 +136,12 @@ abstract class BaseController extends LumenController implements Factory {
             $class = $this->defaultService.$key->suffix;
 
             if ( class_exists($class) ) {
-                return new $class($this->repository, app()->make(Logger::class));
+                return new $class($this->repository, $this->logger);
             }
 
         }
 
-        return new $this->defaultService($this->repository, app()->make(Logger::class));
+        return new $this->defaultService($this->repository, $this->logger);
     }
 
 

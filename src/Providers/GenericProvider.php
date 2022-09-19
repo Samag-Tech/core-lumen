@@ -1,8 +1,10 @@
 <?php namespace SamagTech\CoreLumen\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use SamagTech\CoreLumen\Models\ServiceKey;
+use SamagTech\CoreLumen\Models\Log;
 use SamagTech\CoreLumen\Models\System;
+use Illuminate\Support\ServiceProvider;
+use SamagTech\CoreLumen\Handlers\DBLogger;
+use SamagTech\CoreLumen\Models\ServiceKey;
 
 /**
  * Provider per caricamenti generici
@@ -20,6 +22,11 @@ class GenericProvider extends ServiceProvider {
 
         app()->bind(System::class, function ($app) {
             return new System();
+        });
+
+        // Implementazione Logger
+        app()->singleton(Logger::class, function ($app) {
+            return new DBLogger(new Log);
         });
     }
 
