@@ -325,8 +325,9 @@ abstract class BaseService implements Service {
         // Recupera eventuali relazioni
         $relations = $this->getRelations($data);
 
-        if ( $this->repository->getKeyType() === 'string' ) {
-            $data[$this->repository->getKeyName()] = Uuid::uuid4()->toString();
+        // Genero l'ID se il modello ha impostato il tipo stringa
+        if ( $this->repository->getKeyType() === 'string' && method_exists($this->repository, 'generateIdString') ) {
+            $data[$this->repository->getKeyName()] = $this->repository->generateIdString();
         }
 
         // Crea la risorsa

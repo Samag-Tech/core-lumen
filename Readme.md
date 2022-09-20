@@ -1,3 +1,7 @@
+# [v1.2.0] - Patch 2022-09-20
+
+- Implementazione automatica generazione ID stringa
+
 # [v1.1.3] - Patch 2022-09-19
 
 - Fix implementazione dei logger
