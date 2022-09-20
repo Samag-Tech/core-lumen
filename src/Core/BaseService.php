@@ -9,6 +9,7 @@ use SamagTech\CoreLumen\Handlers\ListOptions;
 use Illuminate\Contracts\Pagination\Paginator;
 use SamagTech\CoreLumen\Traits\WithValidation;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Ramsey\Uuid\Uuid;
 use SamagTech\CoreLumen\Traits\RequestCleanable;
 use SamagTech\CoreLumen\Exceptions\ValidationException;
 use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
@@ -323,6 +324,10 @@ abstract class BaseService implements Service {
 
         // Recupera eventuali relazioni
         $relations = $this->getRelations($data);
+
+        if ( $this->repository->getKeyType() === 'string' ) {
+            $data[$this->repository->getKeyName()] = Uuid::uuid4()->toString();
+        }
 
         // Crea la risorsa
         $resource = $this->repository->create($data);
