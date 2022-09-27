@@ -377,7 +377,7 @@ abstract class BaseService implements Service {
         }
 
         // Imposto e lancio le validazioni
-        $this->setValidations($this->genericRules, $this->updateRules);
+        $this->setValidations(array_merge($this->genericRules, $this->updateRules));
 
         if ( ! $this->runValidation($request) ) {
 
