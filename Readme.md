@@ -1,3 +1,7 @@
+# [v1.3.1] - Patch 2022-09-27
+
+- Fix vari
+
 # [v1.3.0] - Patch 2022-09-27
 
 - Aggiunta deprecazioni
