@@ -12,6 +12,7 @@ use Ramsey\Uuid\Uuid;
  *
  * @author Alessandro Marotta <alessandro.marotta@samag.tech>
  * @since v1.1
+ * @deprecated  use HasUuids https://laravel.com/docs/9.x/eloquent#uuid-and-ulid-keys
  */
 trait HasIDString {
 
