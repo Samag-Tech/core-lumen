@@ -53,20 +53,37 @@ abstract class BaseValidationRequest implements ValidationRequest {
      * Richiesta da validare
      *
      * @access protected
-     * @var Illuminate\Http\Request
+     * @var Illuminate\Http\Request|null
      */
-    protected Request $request;
+    protected ?Request $request = null;
+
+    /**
+     * Array con i dati da validare
+     *
+     * @access protected
+     *
+     * @var array
+     */
+    protected array $toValidate = [];
 
     //---------------------------------------------------------------------------------------------------
 
     /**
      * Costruttore.
      *
-     * @param Illuminate\Http\Request $request  Richiesta
+     * @param Illuminate\Http\Request|array $toValidate     Dati da validare
      */
-    public function __construct(Request $request) {
+    public function __construct(Request|array $toValidate) {
 
-        $this->request = $request;
+        if ( $toValidate instanceof Request ) {
+
+            $this->toValidate = $toValidate->all();
+
+            $this->request = $toValidate;
+        }
+        else {
+            $this->toValidate = $toValidate;
+        }
 
         // Lancia la validazione
         $this->run();
@@ -85,7 +102,7 @@ abstract class BaseValidationRequest implements ValidationRequest {
 
         // Creo il validatore
         $validator = Validator::make(
-            $this->request->all(),
+            $this->toValidate,
             $this->rules(),
             $this->messages(),
             $this->customAttributes()
