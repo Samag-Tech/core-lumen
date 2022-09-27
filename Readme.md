@@ -1,3 +1,10 @@
+# [v1.3.0] - Patch 2022-09-27
+
+- Aggiunta deprecazioni
+- Fix validazione update
+- Aggiunta validazione per la cancellazione
+- Modifica gestione validazione con il doppio tipo
+
 # [v1.2.0] - Patch 2022-09-20
 
 - Implementazione automatica generazione ID stringa
