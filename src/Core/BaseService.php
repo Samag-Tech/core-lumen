@@ -379,7 +379,7 @@ abstract class BaseService implements Service {
         }
 
         // Eseguo le validazioni
-        $this->validation($request, $this->genericRules, $this->insertRules);
+        $this->validation($request, $this->genericRules, $this->updateRules);
 
         // Pulisco la richiesta
         $data = $this->cleanRequest($request);
