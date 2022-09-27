@@ -1,3 +1,8 @@
+# [v1.3.2] - Patch 2022-09-27
+
+- Fix vari
+- Aggiunta funzionalità getUniqueById()
+
 # [v1.3.1] - Patch 2022-09-27
 
 - Fix vari
