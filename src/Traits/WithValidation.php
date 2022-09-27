@@ -105,13 +105,13 @@ trait WithValidation {
      *
      * @access protected
      *
-     * @param \Illuminate\Http\Request $request  Dati della richiesta
+     * @param \Illuminate\Http\Request|array $toValidate  Dati da validare
      *
      * @throws SamagTech\CoreLumen\Exceptions\CoreException    Se una validazione non è un istanza di BaseValidationRequest
      *
      * @return bool
      */
-    protected function runValidation (Request $request) : bool {
+    protected function runValidation (Request|array $toValidate) : bool {
 
         // Se non ci sono validazioni allora ritorna true
         if ( empty($this->validations) ) {
@@ -125,7 +125,7 @@ trait WithValidation {
          */
         foreach ($this->validations as $validate) {
 
-            $istance = new $validate($request);
+            $istance = new $validate($toValidate);
 
             if ( ! $istance instanceof BaseValidationRequest ) {
                 throw new CoreException('La validazione deve estendere BaseValidationRequest');
