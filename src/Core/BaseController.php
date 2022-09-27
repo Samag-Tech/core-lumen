@@ -268,6 +268,9 @@ abstract class BaseController extends LumenController implements Factory {
 
             return respond(['message' => __('core.delete_success')]);
         }
+        catch(ValidationException $e ) {
+            return respondFail($e->getValidationErrors(), 400);
+        }
         catch (BaseException $e ) {
             return respondFail($e->getMessage(), $e->getHttpCode());
         }

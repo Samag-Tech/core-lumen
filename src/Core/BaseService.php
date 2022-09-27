@@ -103,6 +103,15 @@ abstract class BaseService implements Service {
      */
     protected array $updateRules = [];
 
+    /**
+     * Lista delle validazioni da utilizzare
+     * in fase di cancellazione
+     *
+     * @var array
+     * @access protected
+     */
+    protected array $deleteRules = [];
+
     //---------------------------------------------------------------------------------------------------
     //                          ATTRIBUITI PER LA GESTIONE DEL LISTAGGIO
     //---------------------------------------------------------------------------------------------------
@@ -432,6 +441,9 @@ abstract class BaseService implements Service {
             throw new ResourceNotFoundException();
         }
 
+        // Eseguo la validazione
+        $this->validation($resource->toArray(), $this->deleteRules);
+
         // Lancio una callback prima della cancellazione
         $this->beforeDelete($resource, $id);
 
@@ -597,8 +609,6 @@ abstract class BaseService implements Service {
 
     //---------------------------------------------------------------------------------------------------
 
-
-
     /**
      * Callback eseguita prima della cancellazione di una risorsa
      *
@@ -677,20 +687,20 @@ abstract class BaseService implements Service {
     /**
      * Valida la richiesta
      *
-     * @param Request   Richiesta da validare
-     * @param ...$rules Regola per la validazione
+     * @param Request|array $toValidate   Richiesta da validare
+     * @param ...$rules                   Regola per la validazione
      *
      * @throws ValidationException  solleva quest'eccezione in caso di errori di validazione
      *
      * @return void
      */
-    private function validation(Request $request, ...$rules) : void {
+    private function validation(Request|array $toValidate, ...$rules) : void {
 
         $this->setValidations(array_merge(...$rules));
 
-        if ( ! $this->runValidation($request) ) {
+        if ( ! $this->runValidation($toValidate) ) {
 
-            info($this->tag. ': Errore di validazione', ['request' => $request, ['errors' => $this->getValidationErrors()]]);
+            info($this->tag. ': Errore di validazione', ['request' => $toValidate, ['errors' => $this->getValidationErrors()]]);
 
             throw new ValidationException($this->getValidationErrors());
         }
