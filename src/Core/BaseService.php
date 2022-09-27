@@ -378,6 +378,10 @@ abstract class BaseService implements Service {
             throw new ResourceNotFoundException();
         }
 
+        // Credo l'array per eseguire le validazioni
+        $validateData = $request->all();
+        $validateData['id'] = $id;
+
         // Eseguo le validazioni
         $this->validation($request, $this->genericRules, $this->updateRules);
 
