@@ -1,6 +1,8 @@
 <?php namespace SamagTech\CoreLumen\Core;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 use Illuminate\Support\Facades\Validator;
 use SamagTech\CoreLumen\Contracts\ValidationRequest;
 
@@ -144,6 +146,26 @@ abstract class BaseValidationRequest implements ValidationRequest {
      */
     protected function condition () : bool {
         return true;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Restituisce la regola Unique per la fase di creazione o modifica
+     * di un elemento in base l'id
+     *
+     * @access protected
+     *
+     * @param string $table         Tabella su cui effettuare il check
+     * @param string $column        Colonna dell'ID (Default 'id')
+     *
+     * @return Illuminate\Validation\Rules\Unique
+     */
+    protected function getUniqueById(string $table, string $column = 'id') : Unique {
+
+        return ! isset($this->toValidate['id'])
+            ? Rule::unique($table)
+            : Rule::unique($table)->ignore($this->toValidate['id'], $column);
     }
 
     //---------------------------------------------------------------------------------------------------
