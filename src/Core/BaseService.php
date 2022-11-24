@@ -664,13 +664,13 @@ abstract class BaseService implements Service {
      * e tale chiave verrà considerata una relazione che verrà inserita post
      * creazione della risorsa.
      *
-     * @access private
+     * @access protected
      *
      * @param array &$data  Dati della richiesta
      *
      * @return array    Dati della richiesta puliti
      */
-    private function getRelations(array &$data) : array {
+    protected function getRelations(array &$data) : array {
 
         $relations = [];
 
