@@ -1,3 +1,13 @@
+# [v1.5.0] - Patch 2022-11-24
+
+- Aggiunto trait per la gestione delle colonne convertibili in json
+- getRelations() in BaseService da private a protected
+- Classe per il cast nel modelli in JSON
+
+# [v1.4.0] - Patch 2022-11-11
+
+- Aggiunto trait per la gestione degli eventi nel CRUD
+
 # [v1.3.2] - Patch 2022-09-27
 
 - Fix vari
