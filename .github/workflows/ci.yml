@@ -34,24 +34,24 @@ jobs:
       - name: Execute tests
         run: composer test
 
-  docs:
-    needs: tests
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Generate Docs
-        run: |
-          docker run --rm -v $(pwd):/data phpdoc/phpdoc:3 run -d src/ -t ./docs
-      - name: Install Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13.x'
-      - name: Publish Docs
-        uses: easingthemes/ssh-deploy@v2.1.5
-        env:
-            SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-            ARGS: '-rltgoDzvO'
-            SOURCE: "./docs/*"
-            REMOTE_HOST: ${{ secrets.HOST }}
-            REMOTE_USER: ${{ secrets.USER }}
-            TARGET: ${{ secrets.TARGET }}
+  # docs:
+  #   needs: tests
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Generate Docs
+  #       run: |
+  #         docker run --rm -v $(pwd):/data phpdoc/phpdoc:3 run -d src/ -t ./docs
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '13.x'
+  #     - name: Publish Docs
+  #       uses: easingthemes/ssh-deploy@v2.1.5
+  #       env:
+  #           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+  #           ARGS: '-rltgoDzvO'
+  #           SOURCE: "./docs/*"
+  #           REMOTE_HOST: ${{ secrets.HOST }}
+  #           REMOTE_USER: ${{ secrets.USER }}
+  #           TARGET: ${{ secrets.TARGET }}
