@@ -1,3 +1,9 @@
+# [v1.6.0] - Patch 2022-11-25
+
+- Fix migrazione log
+- Modifca DBLogger
+- Aggiunta possibilità di disabilitazione richieste nel controller
+
 # [v1.5.0] - Patch 2022-11-24
 
 - Aggiunto trait per la gestione delle colonne convertibili in json
