@@ -82,6 +82,15 @@ abstract class BaseController extends LumenController implements Factory {
      */
     protected Logger $logger;
 
+    /**
+     * Lista delle richieste disabilitate
+     *
+     * @var array
+     *
+     * @access protected
+     */
+    protected array $disabledRequest = [];
+
     //---------------------------------------------------------------------------------------------------
 
     /**
@@ -158,6 +167,10 @@ abstract class BaseController extends LumenController implements Factory {
      */
     public function index (Request $request) : ResourceCollection|JsonResponse {
 
+        if ( in_array('index', $this->disabledRequest) ) {
+            return respondFail(__('core.not_found_request'), 403);
+        }
+
         try {
             $response = $this->service->index($request);
             return respond($response);
@@ -181,6 +194,10 @@ abstract class BaseController extends LumenController implements Factory {
      */
     public function show (int|string $id) : JsonResource|JsonResponse {
 
+        if ( in_array('show', $this->disabledRequest) ) {
+            return respondFail(__('core.not_found_request'), 403);
+        }
+
         try {
             $response = $this->service->show($id);
             return respond($response);
@@ -202,6 +219,10 @@ abstract class BaseController extends LumenController implements Factory {
      * @return Illuminate\Http\Resources\Json\JsonResource|Illuminate\Http\JsonResponse
      */
     public function store (Request $request) : JsonResource|JsonResponse {
+
+        if ( in_array('store', $this->disabledRequest) ) {
+            return respondFail(__('core.not_found_request'), 403);
+        }
 
         try {
             $response = $this->service->store($request);
@@ -228,6 +249,10 @@ abstract class BaseController extends LumenController implements Factory {
      * @return Illuminate\Http\Resources\Json\JsonResource|Illuminate\Http\JsonResponse
      */
     public function update (Request $request, int | string $id) : JsonResource|JsonResponse {
+
+        if ( in_array('update', $this->disabledRequest) ) {
+            return respondFail(__('core.not_found_request'), 403);
+        }
 
         try {
             $updated = $this->service->update($request, $id);
@@ -258,6 +283,10 @@ abstract class BaseController extends LumenController implements Factory {
      * @return Illuminate\Http\Resources\Json\JsonResource|Illuminate\Http\JsonResponse
      */
     public function delete (int|string $id) : JsonResource|JsonResponse {
+
+        if ( in_array('delete', $this->disabledRequest) ) {
+            return respondFail(__('core.not_found_request'), 403);
+        }
 
         try {
             $deleted = $this->service->delete($id);
