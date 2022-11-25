@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('table');
             $table->string('row_id');
+            $table->string('service');
             $table->string('old_data');
             $table->string('new_data')->nullable();
             $table->string('type', 20);
