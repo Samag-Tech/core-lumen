@@ -35,7 +35,21 @@ class AddServiceKeyCommand extends Command {
 
         $suffix = $this->argument('suffix');
 
-        $key = $serviceKey->create(['suffix' => $suffix]);
+        $confirm = $this->confirm('Vuoi generare una chiave randominca?', true);
+
+        if ( $confirm ) {
+            $key = $serviceKey->create(['suffix' => $suffix]);
+        }
+        else {
+
+            $id = $this->ask('Inserisci la chiave: ');
+
+            $key = $serviceKey->create([
+                'id'        => $id,
+                'suffix'    => $suffix
+            ]);
+        }
+
 
         $this->info("Chiave per il suffisso $suffix : $key->id");
     }

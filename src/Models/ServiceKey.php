@@ -1,5 +1,6 @@
 <?php namespace SamagTech\CoreLumen\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  * @author Alessandro Marotta <alessandro.marotta@samag.tech>
  */
 class ServiceKey extends Model {
+
+    use HasUuids;
 
     protected $fillable = [
         'id',
