@@ -16,7 +16,9 @@ class Log extends Model {
         'row_id',
         'service',
         'old_data',
+        'new_data',
         'type',
+        'user'
     ];
 
     protected $table = 'logs';
