@@ -1,3 +1,8 @@
+# [v1.6.1] - Patch 2022-12-13
+
+- Fix modello dei log
+- Fix comandi per la creazione di chiavi di servizio
+
 # [v1.6.0] - Patch 2022-11-25
 
 - Fix migrazione log
