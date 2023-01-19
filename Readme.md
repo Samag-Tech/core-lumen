@@ -1,3 +1,11 @@
+# [v1.6.3] - Patch 2023-12-19
+
+-  Fix gestione builder nel repository
+
+# [v1.6.2] - Patch 2023-12-19
+
+-  Fix gestione filtri
+
 # [v1.6.1] - Patch 2022-12-13
 
 - Fix modello dei log
