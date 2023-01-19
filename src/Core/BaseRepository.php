@@ -91,21 +91,21 @@ abstract class BaseRepository extends Model {
     public function getList (ListOptions $options) : Paginator|Collection {
 
         // Variabile per concatenare il query builder
-        $builder = null;
+        $builder = $this;
 
         // Imposta le clausole where di default
         foreach ( $options->getWhere() as $where ) {
-            $builder = $this->where($where['column'], $where['clause'], $where['value']);
+            $builder->where($where['column'], $where['clause'], $where['value']);
         }
 
         // Controllo se sono impostati i group by
         if ( ! empty($groupBy = $options->getGroupBy()) ) {
-            $builder = $this->groupBy($groupBy);
+            $builder->groupBy($groupBy);
         }
 
         // Imposto l'ordinamento
         foreach($options->getSortBy() as $sortBy) {
-            $builder = $this->orderBy($sortBy['column'], $sortBy['order']);
+            $builder->orderBy($sortBy['column'], $sortBy['order']);
         }
 
         // Se sono passati i parametri allora le applico alla query in base al query builder
@@ -115,7 +115,7 @@ abstract class BaseRepository extends Model {
 
                 // Se la condizione è null allora applica la classica clausola where
                 if ( is_null($param['condition']) ) {
-                    $builder = $this->where($param['column'], '=', $param['value']);
+                    $builder->where($param['column'], '=', $param['value']);
                     continue;
                 }
 
@@ -126,60 +126,60 @@ abstract class BaseRepository extends Model {
                  */
                 switch ($param['condition']) {
                     case 'not':
-                        $builder = $this->whereNot($param['column'], $param['value']);
+                        $builder->whereNot($param['column'], $param['value']);
                     break;
                     case 'like':
-                        $builder = $this->where($param['column'], 'like', '%'.$param['value'].'%');
+                        $builder->where($param['column'], 'like', '%'.$param['value'].'%');
                     break;
                     case 'gte':
-                        $builder = $this->where($param['column'], '>=', $param['value']);
+                        $builder->where($param['column'], '>=', $param['value']);
                     break;
                     case 'gt':
-                        $builder = $this->where($param['column'], '>', $param['value']);
+                        $builder->where($param['column'], '>', $param['value']);
                     break;
                     case 'lte':
-                        $builder = $this->where($param['column'], '<=', $param['value']);
+                        $builder->where($param['column'], '<=', $param['value']);
                     break;
                     case 'lt':
-                        $builder = $this->where($param['column'], '<', $param['value']);
+                        $builder->where($param['column'], '<', $param['value']);
                     break;
                     case 'bool':
-                        $builder = $this->where($param['column'], '=', $param['value']);
+                        $builder->where($param['column'], '=', $param['value']);
                     break;
                     case 'in':
-                        $builder = $this->whereIn($param['column'], explode(',', $param['value']));
+                        $builder->whereIn($param['column'], explode(',', $param['value']));
                     break;
                     case 'not_in':
-                        $builder = $this->whereNotIn($param['column'], explode(',', $param['value']));
+                        $builder->whereNotIn($param['column'], explode(',', $param['value']));
                     break;
                     case 'null':
                         if ( $param['value'] == 'true' ) {
-                            $builder = $this->whereNull($param['column']);
+                            $builder->whereNull($param['column']);
                         }
                         else if ($param['value'] == 'false') {
-                            $builder = $this->whereNotNull($param['column']);
+                            $builder->whereNotNull($param['column']);
                         }
                     break;
                     case 'between':
-                        $builder = $this->whereBetween($param['column'], explode(',', $param['value']));
+                        $builder->whereBetween($param['column'], explode(',', $param['value']));
                     break;
                     case 'between_not':
-                        $builder = $this->whereNotBetween($param['column'], explode(',', $param['value']));
+                        $builder->whereNotBetween($param['column'], explode(',', $param['value']));
                     break;
                     case 'date':
-                        $builder = $this->whereDate($param['column'], $param['value']);
+                        $builder->whereDate($param['column'], $param['value']);
                     break;
                     case 'year':
-                        $builder = $this->whereYear($param['column'], $param['value']);
+                        $builder->whereYear($param['column'], $param['value']);
                     break;
                     case 'time':
-                        $builder = $this->whereTime($param['column'], $param['value']);
+                        $builder->whereTime($param['column'], $param['value']);
                     break;
                     case 'column':
-                        $builder = $this->whereColumn($param['column'],  $param['value']);
+                        $builder->whereColumn($param['column'],  $param['value']);
                     break;
                     case $options::FULL_TEXT_CONDITION:
-                        $builder = $this->whereFullText($param['column'],  $param['value']);
+                        $builder->whereFullText($param['column'],  $param['value']);
                     break;
                 }
             }
@@ -211,10 +211,11 @@ abstract class BaseRepository extends Model {
      * @access public
      *
      * @param \SamagTech\CoreLumen\Handlers\ListOptions $options    Opzioni per la gestione della lista
+     * @param self $builder    Istanza del builder
      *
-     * @return void
+     * @return self
      */
-    protected function addCustomClause(ListOptions $options, Builder $builder ) : Builder {
+    protected function addCustomClause(ListOptions $options, self $builder ) : self {
         return $builder;
     }
 
