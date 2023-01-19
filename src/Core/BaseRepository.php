@@ -95,17 +95,17 @@ abstract class BaseRepository extends Model {
 
         // Imposta le clausole where di default
         foreach ( $options->getWhere() as $where ) {
-            $builder->where($where['column'], $where['clause'], $where['value']);
+            $builder = $builder->where($where['column'], $where['clause'], $where['value']);
         }
 
         // Controllo se sono impostati i group by
         if ( ! empty($groupBy = $options->getGroupBy()) ) {
-            $builder->groupBy($groupBy);
+            $builder = $builder->groupBy($groupBy);
         }
 
         // Imposto l'ordinamento
         foreach($options->getSortBy() as $sortBy) {
-            $builder->orderBy($sortBy['column'], $sortBy['order']);
+            $builder = $builder->orderBy($sortBy['column'], $sortBy['order']);
         }
 
         // Se sono passati i parametri allora le applico alla query in base al query builder
@@ -115,7 +115,7 @@ abstract class BaseRepository extends Model {
 
                 // Se la condizione è null allora applica la classica clausola where
                 if ( is_null($param['condition']) ) {
-                    $builder->where($param['column'], '=', $param['value']);
+                    $builder = $builder->where($param['column'], '=', $param['value']);
                     continue;
                 }
 
@@ -126,60 +126,60 @@ abstract class BaseRepository extends Model {
                  */
                 switch ($param['condition']) {
                     case 'not':
-                        $builder->whereNot($param['column'], $param['value']);
+                        $builder = $builder->whereNot($param['column'], $param['value']);
                     break;
                     case 'like':
-                        $builder->where($param['column'], 'like', '%'.$param['value'].'%');
+                        $builder = $builder->where($param['column'], 'like', '%'.$param['value'].'%');
                     break;
                     case 'gte':
-                        $builder->where($param['column'], '>=', $param['value']);
+                        $builder = $builder->where($param['column'], '>=', $param['value']);
                     break;
                     case 'gt':
-                        $builder->where($param['column'], '>', $param['value']);
+                        $builder = $builder->where($param['column'], '>', $param['value']);
                     break;
                     case 'lte':
-                        $builder->where($param['column'], '<=', $param['value']);
+                        $builder = $builder->where($param['column'], '<=', $param['value']);
                     break;
                     case 'lt':
-                        $builder->where($param['column'], '<', $param['value']);
+                        $builder = $builder->where($param['column'], '<', $param['value']);
                     break;
                     case 'bool':
-                        $builder->where($param['column'], '=', $param['value']);
+                        $builder = $builder->where($param['column'], '=', $param['value']);
                     break;
                     case 'in':
-                        $builder->whereIn($param['column'], explode(',', $param['value']));
+                        $builder = $builder->whereIn($param['column'], explode(',', $param['value']));
                     break;
                     case 'not_in':
-                        $builder->whereNotIn($param['column'], explode(',', $param['value']));
+                        $builder = $builder->whereNotIn($param['column'], explode(',', $param['value']));
                     break;
                     case 'null':
                         if ( $param['value'] == 'true' ) {
-                            $builder->whereNull($param['column']);
+                            $builder = $builder->whereNull($param['column']);
                         }
                         else if ($param['value'] == 'false') {
-                            $builder->whereNotNull($param['column']);
+                            $builder = $builder->whereNotNull($param['column']);
                         }
                     break;
                     case 'between':
-                        $builder->whereBetween($param['column'], explode(',', $param['value']));
+                        $builder = $builder->whereBetween($param['column'], explode(',', $param['value']));
                     break;
                     case 'between_not':
-                        $builder->whereNotBetween($param['column'], explode(',', $param['value']));
+                        $builder = $builder->whereNotBetween($param['column'], explode(',', $param['value']));
                     break;
                     case 'date':
-                        $builder->whereDate($param['column'], $param['value']);
+                        $builder = $builder->whereDate($param['column'], $param['value']);
                     break;
                     case 'year':
-                        $builder->whereYear($param['column'], $param['value']);
+                        $builder = $builder->whereYear($param['column'], $param['value']);
                     break;
                     case 'time':
-                        $builder->whereTime($param['column'], $param['value']);
+                        $builder = $builder->whereTime($param['column'], $param['value']);
                     break;
                     case 'column':
-                        $builder->whereColumn($param['column'],  $param['value']);
+                        $builder = $builder->whereColumn($param['column'],  $param['value']);
                     break;
                     case $options::FULL_TEXT_CONDITION:
-                        $builder->whereFullText($param['column'],  $param['value']);
+                        $builder = $builder->whereFullText($param['column'],  $param['value']);
                     break;
                 }
             }
@@ -208,14 +208,14 @@ abstract class BaseRepository extends Model {
      * Funziona da sovrascrivere per l'applicazione di ulteriori clausole
      * custom
      *
-     * @access public
+     * @access protected
      *
      * @param \SamagTech\CoreLumen\Handlers\ListOptions $options    Opzioni per la gestione della lista
-     * @param self $builder    Istanza del builder
+     * @param \Illuminate\Database\Eloquent\Builder $builder    Istanza del builder
      *
-     * @return self
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function addCustomClause(ListOptions $options, self $builder ) : self {
+    protected function addCustomClause(ListOptions $options, Builder $builder ) : Builder {
         return $builder;
     }
 
