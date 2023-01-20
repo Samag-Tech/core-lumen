@@ -1,3 +1,7 @@
+# [v1.7.1] - Patch 2023-12-20
+
+-  Fix filter builder
+
 # [v1.7.0] - Patch 2023-12-20
 
 -  Implementazioni dei filtri sulle relazioni

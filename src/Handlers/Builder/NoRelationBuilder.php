@@ -55,7 +55,7 @@ class NoRelationBuilder implements FilterBuilder {
      */
     public static function getInstance($builder) {
 
-        if (!is_null(self::$instance)) {
+        if (is_null(self::$instance)) {
             self::$instance = new static($builder);
         }
 

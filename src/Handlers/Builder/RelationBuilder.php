@@ -60,7 +60,7 @@ class RelationBuilder implements FilterBuilder {
      */
     public static function getInstance($builder, $relation) {
 
-        if (!is_null(self::$instance)) {
+        if (is_null(self::$instance)) {
             self::$instance = new static($builder, $relation);
         }
 
