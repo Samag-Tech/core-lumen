@@ -1,3 +1,7 @@
+# [v1.7.0] - Patch 2023-12-20
+
+-  Implementazioni dei filtri sulle relazioni
+
 # [v1.6.3] - Patch 2023-12-19
 
 -  Fix gestione builder nel repository
