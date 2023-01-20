@@ -19,6 +19,7 @@ use SamagTech\CoreLumen\Exceptions\CoreException;
  * @property array $sortBy
  * @property bool $disablePagination
  * @property array $params
+ * @property array $filtersRelations
  *
  * Sono presenti i getter e i setter di ogni proprietà
  */
@@ -130,10 +131,24 @@ class ListOptions {
     private array $params = [];
 
     /**
+     * Definizione del filtro per le full text
      *
+     * @var array
+     * @access private
      *
+     * @default []
      */
     private array $fullText = [];
+
+    /**
+     * Definizioni dei filtri sulle relazioni
+     *
+     * @var array
+     * @access private
+     *
+     * @default []
+     */
+    private array $filtersRelations = [];
 
     //---------------------------------------------------------------------------------------------------
 
@@ -153,6 +168,7 @@ class ListOptions {
      *      disablePagination
      *      params
      *      fullText
+     *      filtersRelations
      */
     public function __construct(array $options = []) {
 
@@ -276,6 +292,19 @@ class ListOptions {
      */
     public function getFullText() : array {
         return $this->fullText;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
+     * Restituisce la lista dei filtri per le relazioni
+     *
+     * @access public
+     *
+     * @return array
+     */
+    public function getFiltersRelations() : array {
+        return $this->filtersRelations;
     }
 
     //---------------------------------------------------------------------------------------------------
@@ -504,8 +533,33 @@ class ListOptions {
      *
      * @return self
      */
-    public function setFullText(array $fullText) {
+    public function setFullText(array $fullText) : self {
         $this->fullText = $fullText;
+        return $this;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+
+    /**
+     * Imposta i filtri delle relazioni
+     *
+     * @param array $relations
+     * @access public
+     * @return self
+     */
+    public function setFiltersRelations(array $relations) : self {
+
+        foreach ($relations as $filter => $relation) {
+
+            [$rel, $field] = array_pad(explode('.', $relation), 2, null);
+
+            $this->filtersRelations[$filter] = [
+                'relation'  => $relation,
+                'column'    => $field  ?? 'id'
+            ];
+
+        }
+
         return $this;
     }
 
@@ -530,8 +584,9 @@ class ListOptions {
             'page',
             'sortBy',
             'disablePagination',
+            'fullText',
+            'filtersRelations',
             'params',
-            'fullText'
         ];
 
         foreach ( $fields as $field ) {

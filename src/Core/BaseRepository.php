@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use SamagTech\CoreLumen\Handlers\ListOptions;
 use Illuminate\Contracts\Pagination\Paginator;
+use SamagTech\CoreLumen\Handlers\Builder\RelationBuilder;
+use SamagTech\CoreLumen\Handlers\Builder\NoRelationBuilder;
 
 /**
  * Classe astratta per la definizione di un modello
@@ -86,7 +88,7 @@ abstract class BaseRepository extends Model {
      * - column         campo:column=campo2         campo = campo2
      * - search         campo:search=valore         campo MATCH AGAINST (valore)
      *
-     * @return Illuminate\Contracts\Pagination\Paginator|Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Contracts\Pagination\Paginator|\Illuminate\Database\Eloquent\Collection
      */
     public function getList (ListOptions $options) : Paginator|Collection {
 
@@ -111,11 +113,30 @@ abstract class BaseRepository extends Model {
         // Se sono passati i parametri allora le applico alla query in base al query builder
         if ( ! empty($params = $options->getParams()) ) {
 
+            // Recupero le relazioni sui filtri
+            $filtersRelations = $options->getFiltersRelations();
+
             foreach ($params as $param ) {
+
+                /**
+                 * Se è stata definita un filtro sulla relazione allora creo builder
+                 * dei filtri per le relazioni e cambio il valore della colonna utilizzata
+                 *
+                 */
+                if ( isset($filtersRelations[$param['column']]) ) {
+
+                    $filter = $filtersRelations[$param['column']];
+
+                    $filterBuilder = RelationBuilder::getInstance($builder, $filter['relation']);
+                    $param['column'] = $filter['column'];
+                }
+                else {
+                    $filterBuilder = NoRelationBuilder::getInstance($builder);
+                }
 
                 // Se la condizione è null allora applica la classica clausola where
                 if ( is_null($param['condition']) ) {
-                    $builder = $builder->where($param['column'], '=', $param['value']);
+                    $filterBuilder = $filterBuilder->where($param['column'], '=', $param['value']);
                     continue;
                 }
 
@@ -126,79 +147,79 @@ abstract class BaseRepository extends Model {
                  */
                 switch ($param['condition']) {
                     case 'not':
-                        $builder = $builder->whereNot($param['column'], $param['value']);
+                        $filterBuilder = $filterBuilder->whereNot($param['column'], $param['value']);
                     break;
                     case 'like':
-                        $builder = $builder->where($param['column'], 'like', '%'.$param['value'].'%');
+                        $filterBuilder = $filterBuilder->where($param['column'], 'like', '%'.$param['value'].'%');
                     break;
                     case 'gte':
-                        $builder = $builder->where($param['column'], '>=', $param['value']);
+                        $filterBuilder = $filterBuilder->where($param['column'], '>=', $param['value']);
                     break;
                     case 'gt':
-                        $builder = $builder->where($param['column'], '>', $param['value']);
+                        $filterBuilder = $filterBuilder->where($param['column'], '>', $param['value']);
                     break;
                     case 'lte':
-                        $builder = $builder->where($param['column'], '<=', $param['value']);
+                        $filterBuilder = $filterBuilder->where($param['column'], '<=', $param['value']);
                     break;
                     case 'lt':
-                        $builder = $builder->where($param['column'], '<', $param['value']);
+                        $filterBuilder = $filterBuilder->where($param['column'], '<', $param['value']);
                     break;
                     case 'bool':
-                        $builder = $builder->where($param['column'], '=', $param['value']);
+                        $filterBuilder = $filterBuilder->where($param['column'], '=', $param['value']);
                     break;
                     case 'in':
-                        $builder = $builder->whereIn($param['column'], explode(',', $param['value']));
+                        $filterBuilder = $filterBuilder->whereIn($param['column'], $param['value']);
                     break;
                     case 'not_in':
-                        $builder = $builder->whereNotIn($param['column'], explode(',', $param['value']));
+                        $filterBuilder = $filterBuilder->whereNotIn($param['column'], $param['value']);
                     break;
                     case 'null':
                         if ( $param['value'] == 'true' ) {
-                            $builder = $builder->whereNull($param['column']);
+                            $filterBuilder = $filterBuilder->whereNull($param['column']);
                         }
                         else if ($param['value'] == 'false') {
-                            $builder = $builder->whereNotNull($param['column']);
+                            $filterBuilder = $filterBuilder->whereNotNull($param['column']);
                         }
                     break;
                     case 'between':
-                        $builder = $builder->whereBetween($param['column'], explode(',', $param['value']));
+                        $filterBuilder = $filterBuilder->whereBetween($param['column'], $param['value']);
                     break;
                     case 'between_not':
-                        $builder = $builder->whereNotBetween($param['column'], explode(',', $param['value']));
+                        $filterBuilder = $filterBuilder->whereNotBetween($param['column'], $param['value']);
                     break;
                     case 'date':
-                        $builder = $builder->whereDate($param['column'], $param['value']);
+                        $filterBuilder = $filterBuilder->whereDate($param['column'], $param['value']);
                     break;
                     case 'year':
-                        $builder = $builder->whereYear($param['column'], $param['value']);
+                        $filterBuilder = $filterBuilder->whereYear($param['column'], $param['value']);
                     break;
                     case 'time':
-                        $builder = $builder->whereTime($param['column'], $param['value']);
+                        $filterBuilder = $filterBuilder->whereTime($param['column'], $param['value']);
                     break;
                     case 'column':
-                        $builder = $builder->whereColumn($param['column'],  $param['value']);
+                        $filterBuilder = $filterBuilder->whereColumn($param['column'],  $param['value']);
                     break;
                     case $options::FULL_TEXT_CONDITION:
-                        $builder = $builder->whereFullText($param['column'],  $param['value']);
+                        $filterBuilder = $filterBuilder->whereFullText($param['column'],  $param['value']);
                     break;
                 }
             }
 
             // Aggiunge altre clausole prima di recuperare i dati
-            $builder = $this->addCustomClause($options, $builder);
+            $filterBuilder = $this->addCustomClause($options, $filterBuilder);
         }
 
         // Se non è disabilitata la paginazione allora la utilizzo
         if ( ! $options->isDisablePagination() ) {
 
-            return $builder->paginate(
+            return $filterBuilder->paginate(
                 $options->getPerPage(),
                 $options->getSelect(),
                 page: $options->getPage()
             );
         }
         else {
-            return $builder->get();
+            return $filterBuilder->get();
         }
     }
 

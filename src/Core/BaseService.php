@@ -9,7 +9,6 @@ use SamagTech\CoreLumen\Handlers\ListOptions;
 use Illuminate\Contracts\Pagination\Paginator;
 use SamagTech\CoreLumen\Traits\WithValidation;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Ramsey\Uuid\Uuid;
 use SamagTech\CoreLumen\Traits\RequestCleanable;
 use SamagTech\CoreLumen\Exceptions\ValidationException;
 use SamagTech\CoreLumen\Exceptions\ResourceNotFoundException;
@@ -61,7 +60,7 @@ abstract class BaseService implements Service {
     /**
      * Modello per gestione dei dati
      *
-     * @var SamagTech\CoreLumen\Core\BaseRepository
+     * @var \SamagTech\CoreLumen\Core\BaseRepository
      *
      * @access protected
      */
@@ -218,6 +217,27 @@ abstract class BaseService implements Service {
      */
     protected array $listFullText = [];
 
+    /**
+     * Lista delle configurazioni per i filtri sulle relazioni.
+     *
+     * Per filtrare su un campo dei una relazione, deve essere
+     * definito il nome del campo e la relativa relazione.
+     *
+     * ES. Filtro sulla colonna ID della tabella X con la relazione
+     * hasMany codificata con x();
+     *
+     * Bisogna compilare l'array con chiave il filtro da utilizzare
+     * e con valore la relazione.colonna
+     *
+     * [
+     *   'x_id' => 'x.id'   con il parametro x_id si filtra sulla relazione x sulla colonna id
+     * ]
+     *
+     * Di default, se non è impostata la colonna il filtro si basa sull'id
+     *
+     */
+    protected array $filtersRelations = [];
+
     //---------------------------------------------------------------------------------------------------
 
     /**
@@ -263,7 +283,8 @@ abstract class BaseService implements Service {
             'sortBy'            => $sortBy ,
             'disablePagination' => $this->disablePagination,
             'params'            => $params,
-            'fullText'          => $this->listFullText
+            'fullText'          => $this->listFullText,
+            'filtersRelations'  => $this->filtersRelations
         ];
 
         $listOptions = new ListOptions($options);
@@ -470,7 +491,7 @@ abstract class BaseService implements Service {
     /**
      * Restituisce il repository del servizio
      *
-     * @return BaseRepository
+     * @return \SamagTech\CoreLumen\Core\BaseRepository
      */
     public function getRepository () : BaseRepository {
         return $this->repository;
