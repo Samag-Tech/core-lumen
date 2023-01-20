@@ -207,19 +207,21 @@ abstract class BaseRepository extends Model {
 
             // Aggiunge altre clausole prima di recuperare i dati
             $filterBuilder = $this->addCustomClause($options, $filterBuilder);
+
+            $builder = $filterBuilder;
         }
 
         // Se non è disabilitata la paginazione allora la utilizzo
         if ( ! $options->isDisablePagination() ) {
 
-            return $filterBuilder->paginate(
+            return $builder->paginate(
                 $options->getPerPage(),
                 $options->getSelect(),
                 page: $options->getPage()
             );
         }
         else {
-            return $filterBuilder->get();
+            return $builder->get();
         }
     }
 

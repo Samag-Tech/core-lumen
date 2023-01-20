@@ -1,3 +1,7 @@
+# [v1.7.2] - Patch 2023-12-20
+
+-  Fix listaggio senza filtri
+
 # [v1.7.1] - Patch 2023-12-20
 
 -  Fix filter builder
