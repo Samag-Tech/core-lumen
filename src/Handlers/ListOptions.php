@@ -555,7 +555,7 @@ class ListOptions {
 
             $this->filtersRelations[$filter] = [
                 'relation'  => $rel,
-                'column'    => $field  ?? 'id'
+                'column'    => !is_null($field) ? $rel . '.' . $field : $rel.'.id'
             ];
 
         }

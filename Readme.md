@@ -1,3 +1,7 @@
+# [v1.7.3] - Patch 2023-02-02
+
+-  Fix filtri con nomi su più tabelle
+
 # [v1.7.2] - Patch 2023-12-20
 
 -  Fix listaggio senza filtri
