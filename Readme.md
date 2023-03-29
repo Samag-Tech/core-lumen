@@ -1,3 +1,7 @@
+# [v1.7.4] - Patch 2023-03-29
+
+-  Fix sortBy
+
 # [v1.7.3] - Patch 2023-02-02
 
 -  Fix filtri con nomi su più tabelle

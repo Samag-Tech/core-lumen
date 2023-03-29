@@ -267,7 +267,7 @@ abstract class BaseService implements Service {
         $params = $request->query();
 
         // Setup sort_by
-        $sortBy = $params['sort_by'] ?? null;
+        $sortBy = $params['sort_by'] ?? $this->listSortBy;
 
         if ( ! is_null($sortBy) && is_string($sortBy) ) {
             $sortBy = [$sortBy];
