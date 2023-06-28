@@ -1,3 +1,7 @@
+# [v1.7.5] - Patch 2023-06-28
+
+-  Aggiunta funzione getTag
+
 # [v1.7.4] - Patch 2023-03-29
 
 -  Fix sortBy
