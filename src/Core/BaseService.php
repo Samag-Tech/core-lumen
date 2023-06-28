@@ -710,6 +710,17 @@ abstract class BaseService implements Service {
     //---------------------------------------------------------------------------------------------------
 
     /**
+     * Restituisce il tag del servizio
+     *
+     * @return string
+     */
+    protected function getTag() : string {
+        return $this->tag;
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    /**
      * Valida la richiesta
      *
      * @param Request|array $toValidate   Richiesta da validare
